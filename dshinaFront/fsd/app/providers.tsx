@@ -1,0 +1,21 @@
+"use client";
+
+import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MantineProvider } from "@mantine/core";
+import '@mantine/core/styles.css';
+
+
+export function ReactQueryProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [queryClient] = useState(() => new QueryClient());
+
+  return (
+    <MantineProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </MantineProvider>
+  );
+}
