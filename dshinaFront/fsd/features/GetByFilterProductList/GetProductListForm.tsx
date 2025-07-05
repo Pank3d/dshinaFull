@@ -83,7 +83,7 @@ export const GetProductListForm = () => {
     [season],
     thom,
     [type],
-    wrhList,
+    wrhList
   );
 
   console.log(testGetGoods);
