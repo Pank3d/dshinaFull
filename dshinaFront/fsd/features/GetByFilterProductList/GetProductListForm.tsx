@@ -1,6 +1,7 @@
 "use client";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
+import { useState } from "react";
 import SelectComponent from "../../shared/ui/Select/Select";
 import {
   useGetGoodsByCar,
@@ -10,7 +11,9 @@ import {
   useGetWarehouses,
   useGetYearAvto,
 } from "../../entities/markiAvto/api/query";
-import { useState } from "react";
+import { LoaderComponent } from "../../shared/ui/Loader/Loader";
+import { ProductList } from "../ProductList";
+import style from "./GetProductListForm.module.scss";
 
 export const GetProductListForm = () => {
   const [marka, setMarka] = useState("");
@@ -20,7 +23,7 @@ export const GetProductListForm = () => {
   const [podborType, setPodborType] = useState<number>();
   const [season, setSeason] = useState([]);
   const [thom, setThom] = useState(false);
-  const [type, setType] = useState([]);
+  const [type, setType] = useState();
   const [wrhList, setWrhList] = useState([]);
   const { data: dataWarehouses, isLoading: isLoadingWarehouses } =
     useGetWarehouses();
@@ -68,9 +71,8 @@ export const GetProductListForm = () => {
 
     return options;
   };
-
   const {
-    data: testGetGoods,
+    data: goodsData,
     isLoading: isLoadingTestGetGoods,
     error: errorTestGetGoods,
   } = useGetGoodsByCar(
@@ -82,11 +84,18 @@ export const GetProductListForm = () => {
     [podborType],
     [season],
     thom,
-    [type],
+    [],
     wrhList
   );
 
-  console.log(testGetGoods);
+  const filteredGoodsData = goodsData?.price_rest_list?.goods_price_rest.filter(
+    (item) => {
+      if (!type) {
+        return true;
+      }
+      return item.type === type;
+    }
+  );
 
   return (
     <div className="p-7">
@@ -101,7 +110,7 @@ export const GetProductListForm = () => {
         <Form>
           <div className="flex">
             {isLoading ? (
-              <p>Загрузка...</p>
+              <LoaderComponent />
             ) : (
               <Field
                 name="marka"
@@ -114,7 +123,7 @@ export const GetProductListForm = () => {
               />
             )}
             {isLoadingModel ? (
-              <p>Загрузка...</p>
+              <LoaderComponent />
             ) : (
               <Field
                 name="model"
@@ -127,7 +136,7 @@ export const GetProductListForm = () => {
               />
             )}
             {isLoadingYear ? (
-              <p>Загрузка...</p>
+              <LoaderComponent />
             ) : (
               <Field
                 name="year"
@@ -140,7 +149,7 @@ export const GetProductListForm = () => {
               />
             )}
             {isLoadingModification ? (
-              <p>Загрузка...</p>
+              <LoaderComponent />
             ) : (
               <Field
                 name="modification"
@@ -221,30 +230,60 @@ export const GetProductListForm = () => {
             placeholder="Выберите тип"
             data={[
               {
-                label: "шины",
-                value: "tire",
-              },
-              {
-                label: "диски",
+                label: "диск",
                 value: "disk",
               },
               {
-                label: "датчики давления",
-                value: "pressure_sensor",
+                label: "Легковая шина",
+                value: "car",
               },
               {
-                label: "Все",
-                value: "",
+                label: "Легкогрузовая шина (микроавтобусы)",
+                value: "cartruck",
+              },
+              {
+                label:
+                  "Шина для вилочных погрузчиков и Складская и портовая техника",
+                value: "loader",
+              },
+              {
+                label: "Мотошина",
+                value: "moto",
+              },
+              {
+                label: "Сельхозтехника",
+                value: "selhoz",
+              },
+              {
+                label: "Строительная и КГШ",
+                value: "specteh",
+              },
+              {
+                label: "Грузовая шина",
+                value: "truck",
+              },
+              {
+                label: "Внедорожная шина (4x4)",
+                value: "vned",
+              },
+              {
+                label: "Шина для квадроциклов",
+                value: "quadbike",
+              },
+              {
+                label: "Прочего назначения",
+                value: "other",
               },
             ]}
             onChangeFromParent={setType}
           />
-
-          <button className="mt-10" type="submit">
-            Отправить
-          </button>
         </Form>
       </Formik>
+      {goodsData && filteredGoodsData ? (
+        <ProductList data={filteredGoodsData} />
+      ) : (
+        <p className={style.anyText}> Здесь буду ваши шины </p>
+      )}
     </div>
   );
 };

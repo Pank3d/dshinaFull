@@ -1,4 +1,5 @@
 import axios from "axios";
+import { GoodsDataResponse } from "./types";
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const getMarkiAvto = async () => {
@@ -21,8 +22,12 @@ export const getYearAvto = async (marka: string, model: string) => {
   return response.data;
 };
 
-
-export const getModificationAvto = async (marka: string, model: string, year_beg: number[], year_end: number[]) => {
+export const getModificationAvto = async (
+  marka: string,
+  model: string,
+  year_beg: number[],
+  year_end: number[]
+) => {
   const response = await axios.post(`${baseUrl}/modificationsAvto`, {
     marka,
     model,
@@ -32,8 +37,18 @@ export const getModificationAvto = async (marka: string, model: string, year_beg
   return response.data;
 };
 
-
-export const getGoodsByCar = async (marka: string, model: string, modification: string,year_beg: number[], year_end: number[], podbor_type?: number[], season_list?: string[], thom?: boolean, type?: string[], wh_list?: number[]) => {
+export const getGoodsByCar = async (
+  marka: string,
+  model: string,
+  modification: string,
+  year_beg: number[],
+  year_end: number[],
+  podbor_type?: number[],
+  season_list?: string[],
+  thom?: boolean,
+  type?: string[],
+  wh_list?: number[]
+): Promise<GoodsDataResponse> => {
   const response = await axios.post(`${baseUrl}/goodsAvto`, {
     marka,
     model,
@@ -48,7 +63,6 @@ export const getGoodsByCar = async (marka: string, model: string, modification: 
   });
   return response.data;
 };
-
 
 export const getWarehouses = async () => {
   const response = await axios.get(`${baseUrl}/warehouses`);
