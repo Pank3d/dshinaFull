@@ -2,7 +2,9 @@ import { GoodsPriceRest } from "../markiAvto/api/types";
 
 export type BasketState = {
   basketArray: GoodsPriceRest[];
+  loadingItems: Set<string>;
   isItemInBasket: (code: string) => boolean;
   setBasketArray: (item: GoodsPriceRest) => void;
-  deleteBasketArray: (code: number) => void;
+  deleteBasketArray: (code: string) => Promise<void>;
+  isItemLoading: (code: string) => boolean;
 }

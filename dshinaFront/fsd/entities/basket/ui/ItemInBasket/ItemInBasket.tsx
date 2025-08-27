@@ -5,14 +5,21 @@ import Image from "next/image";
 import style from "./ItemInBasket.module.scss";
 import { GoodsPriceRest } from "../../../markiAvto/api/types";
 import { useBasketStore } from "../../BasketStore";
+import { LoaderComponent } from "../../../../shared/ui/Loader/Loader";
 
 interface ItemInBasketProps {
   item: GoodsPriceRest;
 }
 
 export const ItemInBasket: React.FC<ItemInBasketProps> = ({ item }) => {
-  const { deleteBasketArray } = useBasketStore();
-  
+  const { deleteBasketArray, isItemLoading } = useBasketStore();
+  const isDeleting = isItemLoading(item.code);
+
+  const deleteBasketArrayMethod = async () => {
+    console.log('Нажата кнопка удаления для товара:', item.code);
+    await deleteBasketArray(item.code);
+  }
+
   const getPrice = () => {
     if (item.whpr?.wh_price_rest && item.whpr.wh_price_rest.length > 0) {
       return item.whpr.wh_price_rest[0].price_rozn || item.whpr.wh_price_rest[0].price;
@@ -53,10 +60,18 @@ export const ItemInBasket: React.FC<ItemInBasketProps> = ({ item }) => {
       <div className={style.priceSection}>
         <div className={style.price}>{getPrice().toLocaleString()}р</div>
         <button 
-          className={style.deleteButton}
-          onClick={() => deleteBasketArray(Number(item.code))}
+          className={`${style.deleteButton} ${isDeleting ? style.deleting : ''}`}
+          onClick={() => deleteBasketArrayMethod()}
+          disabled={isDeleting}
         >
-          Удалить
+          {isDeleting ? (
+            <>
+              <LoaderComponent />
+              Удаление...
+            </>
+          ) : (
+            'Удалить'
+          )}
         </button>
       </div>
     </div>

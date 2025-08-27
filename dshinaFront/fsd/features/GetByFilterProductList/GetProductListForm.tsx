@@ -1,7 +1,8 @@
 "use client";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import SelectComponent from "../../shared/ui/Select/Select";
 import {
   useGetGoodsByCar,
@@ -16,6 +17,9 @@ import { ProductList } from "../ProductList";
 import style from "./GetProductListForm.module.scss";
 
 export const GetProductListForm = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [marka, setMarka] = useState("");
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
@@ -25,6 +29,60 @@ export const GetProductListForm = () => {
   const [thom, setThom] = useState(false);
   const [type, setType] = useState();
   const [wrhList, setWrhList] = useState([]);
+
+  // Функция для обновления URL с параметрами
+  const updateURL = (params: Record<string, string | number | boolean | undefined>) => {
+    const newSearchParams = new URLSearchParams();
+    
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== "" && value !== false) {
+        newSearchParams.set(key, String(value));
+      }
+    });
+
+    const newURL = newSearchParams.toString() 
+      ? `?${newSearchParams.toString()}` 
+      : window.location.pathname;
+    
+    router.push(newURL, { scroll: false });
+  };
+
+  // Функция для восстановления данных из URL
+  useEffect(() => {
+    const markaParam = searchParams.get('marka') || '';
+    const modelParam = searchParams.get('model') || '';
+    const yearParam = searchParams.get('year') || '';
+    const modificationParam = searchParams.get('modification') || '';
+    const podborTypeParam = searchParams.get('podborType');
+    const seasonParam = searchParams.get('season');
+    const thomParam = searchParams.get('thom');
+    const typeParam = searchParams.get('type');
+
+    if (markaParam) setMarka(markaParam);
+    if (modelParam) setModel(modelParam);
+    if (yearParam) setYear(yearParam);
+    if (modificationParam) setModification(modificationParam);
+    if (podborTypeParam) setPodborType(Number(podborTypeParam));
+    if (seasonParam) setSeason(seasonParam.split(',') as any);
+    if (thomParam) setThom(thomParam === 'true');
+    if (typeParam) setType(typeParam as any);
+  }, [searchParams]);
+
+  // Обновляем URL при изменении параметров
+  useEffect(() => {
+    if (marka || model || year || modification || podborType || season.length || thom || type) {
+      updateURL({
+        marka,
+        model,
+        year,
+        modification,
+        podborType,
+        season: season.length ? season.join(',') : undefined,
+        thom: thom || undefined,
+        type
+      });
+    }
+  }, [marka, model, year, modification, podborType, season, thom, type]);
   const { data: dataWarehouses, isLoading: isLoadingWarehouses } =
     useGetWarehouses();
 
@@ -99,191 +157,231 @@ export const GetProductListForm = () => {
 
   return (
     <div className="p-7">
-      <Formik
-        initialValues={{ marka: "" }}
-        validationSchema={Yup.object({
-          marka: Yup.string().required("Выберите марку"),
-        })}
-        validateOnChange={true}
-        onSubmit={(values) => console.log("Отправка:", values)}
-      >
-        <Form>
-          <div className="flex">
-            {isLoading ? (
-              <LoaderComponent />
-            ) : (
-              <Field
-                name="marka"
-                component={SelectComponent}
-                label="Марка"
-                placeholder="Выберите марку"
-                data={dataMarki}
-                onChangeFromParent={setMarka}
-                searchable
-              />
-            )}
-            {isLoadingModel ? (
-              <LoaderComponent />
-            ) : (
-              <Field
-                name="model"
-                component={SelectComponent}
-                label="Модель"
-                placeholder="Выберите модель"
-                data={dataModel}
-                onChangeFromParent={setModel}
-                searchable
-              />
-            )}
-            {isLoadingYear ? (
-              <LoaderComponent />
-            ) : (
-              <Field
-                name="year"
-                component={SelectComponent}
-                label="Год"
-                placeholder="Выберите год"
-                data={renderDataYearOptions()}
-                onChangeFromParent={setYear}
-                searchable
-              />
-            )}
-            {isLoadingModification ? (
-              <LoaderComponent />
-            ) : (
-              <Field
-                name="modification"
-                component={SelectComponent}
-                label="Модификация"
-                placeholder="Выберите модификацию"
-                data={dataModification}
-                onChangeFromParent={setModification}
-                searchable
-              />
-            )}
+      <div className={style.formContainer}>
+        <h2 className={style.formTitle}>🚗 Подбор шин по автомобилю</h2>
+        
+        <Formik
+          initialValues={{ 
+            marka: marka,
+            model: model,
+            year: year,
+            modification: modification,
+            podbor_type: podborType?.toString() || "",
+            season_list: season.join(',') || "",
+            thom: thom.toString(),
+            type: type || ""
+          }}
+          enableReinitialize={true}
+          validationSchema={Yup.object({
+            marka: Yup.string().required("Выберите марку"),
+          })}
+          validateOnChange={true}
+          onSubmit={(values) => console.log("Отправка:", values)}
+        >
+          <Form>
+            <div className={style.formRow}>
+              <div className={style.selectWrapper}>
+                <Field
+                  name="marka"
+                  component={SelectComponent}
+                  label="Марка автомобиля"
+                  placeholder={isLoading ? "Загружаем данные..." : "Выберите марку"}
+                  data={dataMarki || []}
+                  onChangeFromParent={setMarka}
+                  searchable
+                  disabled={isLoading}
+                />
+              </div>
+              
+              <div className={style.selectWrapper}>
+                <Field
+                  name="model"
+                  component={SelectComponent}
+                  label="Модель автомобиля"
+                  placeholder={isLoadingModel ? "Загружаем данные..." : "Выберите модель"}
+                  data={dataModel || []}
+                  onChangeFromParent={setModel}
+                  searchable
+                  disabled={isLoadingModel}
+                />
+              </div>
+              
+              <div className={style.selectWrapper}>
+                <Field
+                  name="year"
+                  component={SelectComponent}
+                  label="Год выпуска"
+                  placeholder={isLoadingYear ? "Загружаем данные..." : "Выберите год"}
+                  data={renderDataYearOptions()}
+                  onChangeFromParent={setYear}
+                  searchable
+                  disabled={isLoadingYear}
+                />
+              </div>
+              
+              <div className={style.selectWrapper}>
+                <Field
+                  name="modification"
+                  component={SelectComponent}
+                  label="Модификация"
+                  placeholder={isLoadingModification ? "Загружаем данные..." : "Выберите модификацию"}
+                  data={dataModification || []}
+                  onChangeFromParent={setModification}
+                  searchable
+                  disabled={isLoadingModification}
+                />
+              </div>
+            </div>
+            
+            <div className={style.formRow}>
+              <div className={style.selectWrapper}>
+                <Field
+                  name="podbor_type"
+                  component={SelectComponent}
+                  label="Тип подбора"
+                  placeholder="Выберите тип подбора"
+                  data={[
+                    {
+                      label: "Штатный размер",
+                      value: "1",
+                    },
+                    {
+                      label: "Не штатный размер",
+                      value: "2",
+                    },
+                    {
+                      label: "Тюнинговый размер",
+                      value: "3",
+                    },
+                  ]}
+                  onChangeFromParent={setPodborType}
+                  searchable
+                />
+              </div>
+              
+              <div className={style.selectWrapper}>
+                <Field
+                  name="season_list"
+                  component={SelectComponent}
+                  label="Сезонность"
+                  placeholder="Выберите сезон"
+                  data={[
+                    {
+                      label: "Летние шины",
+                      value: "w",
+                    },
+                    {
+                      label: "Зимние шины",
+                      value: "s",
+                    },
+                    {
+                      label: "Всесезонные шины",
+                      value: "u",
+                    },
+                  ]}
+                  onChangeFromParent={setSeason}
+                  searchable
+                />
+              </div>
+              
+              <div className={style.selectWrapper}>
+                <Field
+                  name="thom"
+                  component={SelectComponent}
+                  label="Шипованные"
+                  placeholder="С шипами или без"
+                  data={[
+                    {
+                      label: "С шипами",
+                      value: "true",
+                    },
+                    {
+                      label: "Без шипов",
+                      value: "false",
+                    },
+                  ]}
+                  onChangeFromParent={setThom}
+                />
+              </div>
+            </div>
+            
+            <div className={style.formRowSingle}>
+              <div className={style.selectWrapper}>
+                <Field
+                  name="type"
+                  component={SelectComponent}
+                  label="Тип товара"
+                  placeholder="Выберите тип товара"
+                  data={[
+                    {
+                      label: "🛣 Диски",
+                      value: "disk",
+                    },
+                    {
+                      label: "🚗 Легковые шины",
+                      value: "car",
+                    },
+                    {
+                      label: "🚐 Легкогрузовые шины",
+                      value: "cartruck",
+                    },
+                    {
+                      label: "🏭 Погрузчики и складская техника",
+                      value: "loader",
+                    },
+                    {
+                      label: "🏍 Мотошины",
+                      value: "moto",
+                    },
+                    {
+                      label: "🚜 Сельхозтехника",
+                      value: "selhoz",
+                    },
+                    {
+                      label: "🏗 Строительная и КГШ",
+                      value: "specteh",
+                    },
+                    {
+                      label: "🚛 Грузовые шины",
+                      value: "truck",
+                    },
+                    {
+                      label: "🚙 Внедорожные шины (4x4)",
+                      value: "vned",
+                    },
+                    {
+                      label: "🏎 Квадроциклы",
+                      value: "quadbike",
+                    },
+                    {
+                      label: "🔧 Прочее",
+                      value: "other",
+                    },
+                  ]}
+                  onChangeFromParent={setType}
+                  searchable
+                />
+              </div>
+            </div>
+          </Form>
+        </Formik>
+      </div>
+      
+      <div className={style.resultsSection}>
+        {isLoadingTestGetGoods ? (
+          <div className={style.loadingState}>
+            <LoaderComponent/>
+            <p style={{ marginTop: '16px', color: '#6b7280' }}>Загружаем шины...</p>
           </div>
-          <Field
-            name="podbor_type"
-            component={SelectComponent}
-            label="Тип подбора"
-            placeholder="Выберите тип подбора"
-            data={[
-              {
-                label: "Штатный размер",
-                value: "1",
-              },
-              {
-                label: "Не штатный размер",
-                value: "2",
-              },
-              {
-                label: "Тюнинговый размер",
-                value: "3",
-              },
-            ]}
-            onChangeFromParent={setPodborType}
-            searchable
-          />
-          <Field
-            name="season_list"
-            component={SelectComponent}
-            label="Сезон"
-            placeholder="Выберите сезон"
-            data={[
-              {
-                label: "Летние",
-                value: "w",
-              },
-              {
-                label: "Зимние",
-                value: "s",
-              },
-              {
-                label: "Всесезонные",
-                value: "u",
-              },
-            ]}
-            onChangeFromParent={setSeason}
-            searchable
-          />
-          <Field
-            name="thom"
-            component={SelectComponent}
-            label="С щипами"
-            placeholder="Выберите температуру"
-            data={[
-              {
-                label: "Да",
-                value: "true",
-              },
-              {
-                label: "Нет",
-                value: "false",
-              },
-            ]}
-            onChangeFromParent={setThom}
-          />
-          <Field
-            name="type"
-            component={SelectComponent}
-            label="Тип"
-            placeholder="Выберите тип"
-            data={[
-              {
-                label: "диск",
-                value: "disk",
-              },
-              {
-                label: "Легковая шина",
-                value: "car",
-              },
-              {
-                label: "Легкогрузовая шина (микроавтобусы)",
-                value: "cartruck",
-              },
-              {
-                label:
-                  "Шина для вилочных погрузчиков и Складская и портовая техника",
-                value: "loader",
-              },
-              {
-                label: "Мотошина",
-                value: "moto",
-              },
-              {
-                label: "Сельхозтехника",
-                value: "selhoz",
-              },
-              {
-                label: "Строительная и КГШ",
-                value: "specteh",
-              },
-              {
-                label: "Грузовая шина",
-                value: "truck",
-              },
-              {
-                label: "Внедорожная шина (4x4)",
-                value: "vned",
-              },
-              {
-                label: "Шина для квадроциклов",
-                value: "quadbike",
-              },
-              {
-                label: "Прочего назначения",
-                value: "other",
-              },
-            ]}
-            onChangeFromParent={setType}
-          />
-        </Form>
-      </Formik>
-      {goodsData && filteredGoodsData ? (
-        <ProductList data={filteredGoodsData} />
-      ) : (
-        <p className={style.anyText}> Здесь буду ваши шины </p>
-      )}
+        ) : goodsData && filteredGoodsData && filteredGoodsData.length > 0 ? (
+          <ProductList data={filteredGoodsData} />
+        ) : (
+          <p className={style.anyText}> 
+            🔍 Здесь будут ваши шины
+            <small>Выберите параметры автомобиля для поиска</small>
+          </p>
+        )}
+      </div>
     </div>
   );
 };
