@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { getGoodsByCar, getMarkiAvto, getModelAvto, getModificationAvto, getWarehouses, getYearAvto } from "./api";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { getGoodsByCar, getMarkiAvto, getModelAvto, getModificationAvto, getWarehouses, getWarehousesByAddress, getYearAvto, sendOrderToTelegram } from "./api";
 
 export const useGetMarkaAvto = () => {
   return useQuery({
@@ -15,6 +15,16 @@ export const useGetWarehouses = () => {
   return useQuery({
     queryKey: ["warehouses"],
     queryFn: getWarehouses,
+    staleTime: 1000 * 60 * 5,
+    retry: 2,
+  });
+};
+
+export const useGetWarehousesByAddress = (address_id: string) => {
+  return useQuery({
+    queryKey: ["warehouses", address_id],
+    queryFn: () => getWarehousesByAddress(address_id),
+    enabled: !!address_id,
     staleTime: 1000 * 60 * 5,
     retry: 2,
   });
@@ -75,5 +85,22 @@ export const useGetGoodsByCar = (
     enabled: isEnabled,
     staleTime: 1000 * 60 * 5,
     retry: 2,
+  });
+};
+
+export const useSendOrderToTelegram = (
+  onSuccess?: () => void,
+  onError?: (error: any) => void
+) => {
+  return useMutation({
+    mutationFn: sendOrderToTelegram,
+    onSuccess: (data) => {
+      console.log('Order sent successfully:', data);
+      onSuccess?.();
+    },
+    onError: (error) => {
+      console.error('Failed to send order:', error);
+      onError?.(error);
+    },
   });
 };

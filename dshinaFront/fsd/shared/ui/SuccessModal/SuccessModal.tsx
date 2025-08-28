@@ -1,0 +1,27 @@
+'use client';
+
+import React from "react";
+import { ModalComponent } from "../Modal/ModalComponent";
+import style from "./SuccessModal.module.scss";
+
+interface SuccessModalProps {
+  opened: boolean;
+  close: () => void;
+}
+
+export const SuccessModal: React.FC<SuccessModalProps> = ({ opened, close }) => {
+  return (
+    <ModalComponent opened={opened} close={close} title="Заказ оформлен">
+      <div className={style.successContent}>
+        <div className={style.successIcon}>✅</div>
+        <h3 className={style.successTitle}>Спасибо за заказ!</h3>
+        <p className={style.successMessage}>
+          В ближайшее время с вами свяжется наш менеджер для уточнения деталей заказа.
+        </p>
+        <button className={style.successButton} onClick={close}>
+          Понятно
+        </button>
+      </div>
+    </ModalComponent>
+  );
+};

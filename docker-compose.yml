@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # Backend NestJS приложение
+  backend:
+    build:
+      context: ./dshina-back
+      dockerfile: Dockerfile
+    container_name: dshina-backend
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+    restart: unless-stopped
+    networks:
+      - dshina-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Next.js приложение
+  frontend:
+    build:
+      context: ./dshinaFront
+      dockerfile: Dockerfile
+    container_name: dshina-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_BASE_URL=http://backend:4000
+    depends_on:
+      - backend
+      - telegram-bot
+    restart: unless-stopped
+    networks:
+      - dshina-network
+
+  # Telegram Bot
+  telegram-bot:
+    build:
+      context: ./telegram-bot
+      dockerfile: Dockerfile
+    container_name: dshina-telegram-bot
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - BOT_TOKEN=${BOT_TOKEN}
+      - CHAT_ID=${CHAT_ID}
+      - PORT=3001
+    restart: unless-stopped
+    networks:
+      - dshina-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx reverse proxy (опционально)
+  nginx:
+    image: nginx:alpine
+    container_name: dshina-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro  # для SSL сертификатов
+    depends_on:
+      - backend
+      - frontend
+      - telegram-bot
+    restart: unless-stopped
+    networks:
+      - dshina-network
+
+networks:
+  dshina-network:
+    driver: bridge
+
+volumes:
+  ssl_data:

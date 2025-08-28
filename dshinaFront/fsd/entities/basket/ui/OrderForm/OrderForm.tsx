@@ -1,0 +1,101 @@
+'use client';
+
+import React from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import style from "./OrderForm.module.scss";
+
+interface OrderFormProps {
+  onSubmit: (values: { phone: string; telegram: string }) => void;
+  sendOrderMutation: any;
+}
+
+const validationSchema = Yup.object({
+  phone: Yup.string()
+    .matches(
+      /^[\+]?[0-9][\d\s\-\(\)]{8,}$/,
+      "Введите корректный номер телефона"
+    ),
+  telegram: Yup.string()
+    .matches(
+      /^@?[a-zA-Z0-9_]{5,32}$/,
+      "Введите корректный Telegram (@username или username)"
+    ),
+}).test(
+  "at-least-one",
+  "Укажите хотя бы один способ связи (телефон или Telegram)",
+  function(values) {
+    return !!(values.phone || values.telegram);
+  }
+);
+
+export const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, sendOrderMutation }) => {
+  return (
+    <div className={style.orderForm}>
+      <h3 className={style.formTitle}>Контактные данные</h3>
+      <p className={style.formDescription}>
+        Укажите хотя бы один способ связи для подтверждения заказа
+      </p>
+      
+      <Formik
+        initialValues={{ phone: "", telegram: "" }}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      >
+        {({ errors, touched }) => (
+          <Form className={style.form}>
+            <div className={style.fieldGroup}>
+              <label className={style.fieldLabel}>Номер телефона</label>
+              <Field
+                name="phone"
+                type="tel"
+                placeholder="+7 (999) 123-45-67"
+                className={`${style.fieldInput} ${
+                  errors.phone && touched.phone ? style.fieldError : ""
+                }`}
+              />
+              <ErrorMessage
+                name="phone"
+                component="div"
+                className={style.errorMessage}
+              />
+            </div>
+
+            <div className={style.fieldGroup}>
+              <label className={style.fieldLabel}>Telegram</label>
+              <Field
+                name="telegram"
+                type="text"
+                placeholder="@username или username"
+                className={`${style.fieldInput} ${
+                  errors.telegram && touched.telegram ? style.fieldError : ""
+                }`}
+              />
+              <ErrorMessage
+                name="telegram"
+                component="div"
+                className={style.errorMessage}
+              />
+            </div>
+
+            {errors.phone && errors.telegram && !touched.phone && !touched.telegram && (
+              <div className={style.globalError}>
+                Укажите хотя бы один способ связи (телефон или Telegram)
+              </div>
+            )}
+
+            <div className={style.buttonGroup}>
+              <button
+                type="submit"
+                disabled={sendOrderMutation.isPending}
+                className={style.submitButton}
+              >
+                {sendOrderMutation.isPending ? "Отправка..." : "Оформить заказ"}
+              </button>
+            </div>
+          </Form>
+        )}
+      </Formik>
+    </div>
+  );
+};

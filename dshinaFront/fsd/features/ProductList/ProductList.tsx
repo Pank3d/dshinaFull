@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import style from "./ProductList.module.scss";
 import {  GoodsPriceRest } from "../../entities/markiAvto/api/types";
 import { ProductCard } from "../ProductCard";
+import { useProductsStore } from "../../entities/products";
 
 export const ProductList = ({ data }: { data: GoodsPriceRest[] }) => {
+  const { setProducts } = useProductsStore();
+
+  // Сохраняем товары в store для доступа на детальных страницах
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setProducts(data);
+    }
+  }, [data, setProducts]);
+
   return (
     <main className={style.productMainWrapper}>
       {data.map((i) => {

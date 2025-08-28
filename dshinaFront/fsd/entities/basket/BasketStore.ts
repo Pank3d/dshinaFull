@@ -8,60 +8,59 @@ export const useBasketStore = create<BasketState>()(
     (set, get) => ({
       basketArray: [],
       loadingItems: new Set<string>(),
-      
+
       setBasketArray: (item: GoodsPriceRest) => {
-        // Добавляем в загрузку
         set((state) => ({
-          loadingItems: new Set([...state.loadingItems, item.code])
+          loadingItems: new Set([...state.loadingItems, item.code]),
         }));
-        
-        // Имитируем задержку
-        setTimeout(() => {
-          set((state) => {
-            const newLoadingItems = new Set(state.loadingItems);
-            newLoadingItems.delete(item.code);
-            return {
-              basketArray: [...state.basketArray, item],
-              loadingItems: newLoadingItems
-            };
-          });
-        }, 500);
+
+        set((state) => {
+          const newLoadingItems = new Set(state.loadingItems);
+          newLoadingItems.delete(item.code);
+          return {
+            basketArray: [...state.basketArray, item],
+            loadingItems: newLoadingItems,
+          };
+        });
       },
-      
+
       isItemInBasket: (code: string): boolean => {
         return get().basketArray.some((i: GoodsPriceRest) => i.code === code);
       },
-      
+
       isItemLoading: (code: string): boolean => {
         return get().loadingItems.has(code);
       },
-      
+
       deleteBasketArray: async (code: string) => {
-        // Добавляем в состояние загрузки
         set((state) => ({
-          loadingItems: new Set([...state.loadingItems, code])
+          loadingItems: new Set([...state.loadingItems, code]),
         }));
-        
-        // Имитируем задержку удаления
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         set((state) => {
-          console.log('Удаляем товар с кодом:', code);
-          
+          console.log("Удаляем товар с кодом:", code);
+
           const newArray = state.basketArray.filter(
             (item: GoodsPriceRest) => item.code !== code
           );
-          
+
           const newLoadingItems = new Set(state.loadingItems);
           newLoadingItems.delete(code);
-          
-          console.log('Товар удален');
-          
-          return { 
+
+          console.log("Товар удален");
+
+          return {
             basketArray: newArray,
-            loadingItems: newLoadingItems
+            loadingItems: newLoadingItems,
           };
         });
+      },
+
+      clearBasket: () => {
+        set(() => ({
+          basketArray: [],
+          loadingItems: new Set<string>(),
+        }));
       },
     }),
     {

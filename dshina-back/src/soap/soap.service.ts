@@ -135,6 +135,20 @@ export class SoapService {
     return response?.GetWarehousesResult?.warehouses?.WarehouseInfo ?? [];
   }
 
+  /* Получаем склады по address_id */
+  async getWarehousesByAddress(address_id: string) {
+    this.validateEnvAndParams({ address_id });
+
+    const client = await this.createSoapClient();
+    const [response] = await client.GetWarehousesAsync({
+      login: this.LOGIN,
+      password: this.PASSWORD,
+      address_id: address_id,
+    });
+
+    return response?.GetWarehousesResult?.warehouses ?? [];
+  }
+
   /* Получаем шины */
 
   async getGoodsByCar(

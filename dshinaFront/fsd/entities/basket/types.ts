@@ -7,4 +7,5 @@ export type BasketState = {
   setBasketArray: (item: GoodsPriceRest) => void;
   deleteBasketArray: (code: string) => Promise<void>;
   isItemLoading: (code: string) => boolean;
+  clearBasket: () => void;
 }

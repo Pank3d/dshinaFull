@@ -16,6 +16,19 @@
   }
 }
 
+.productLink {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  
+  &:hover {
+    color: inherit;
+  }
+}
+
 .imageContainer {
   display: flex;
   justify-content: center;

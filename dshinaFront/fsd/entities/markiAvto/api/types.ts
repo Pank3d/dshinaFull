@@ -30,6 +30,14 @@ export interface GoodsPriceRest {
   };
 }
 
+export interface WarehouseInfo {
+  id: number;
+  name: string;
+  address: string;
+  phone: string;
+  work_time: string;
+}
+
 export interface GoodsDataResponse {
   currencyRate: CurrencyRate;
   price_rest_list: {

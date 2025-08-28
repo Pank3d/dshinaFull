@@ -68,3 +68,28 @@ export const getWarehouses = async () => {
   const response = await axios.get(`${baseUrl}/warehouses`);
   return response.data;
 };
+
+export const getWarehousesByAddress = async (address_id: string) => {
+  const response = await axios.post(`${baseUrl}/warehouses`, {
+    address_id,
+  });
+  return response.data;
+};
+
+export const sendOrderToTelegram = async (orderData: {
+  customerName: string;
+  email: string;
+  phone: string;
+  telegram?: string;
+  items: Array<{
+    name: string;
+    code: string;
+    price: number;
+    marka: string;
+    model: string;
+  }>;
+  totalPrice: number;
+}) => {
+  const response = await axios.post('http://localhost:3001/api/send-order', orderData);
+  return response.data;
+};

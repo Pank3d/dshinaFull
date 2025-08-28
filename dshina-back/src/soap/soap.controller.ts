@@ -15,6 +15,11 @@ export class SoapController {
     return this.soapService.getWarehouses();
   }
 
+  @Post('warehouses')
+  async getWarehousesByAddress(@Body('address_id') address_id: string) {
+    return this.soapService.getWarehousesByAddress(address_id);
+  }
+
   @Post('modelsAvto')
   async getModelAvto(@Body('marka') marka: string) {
     return this.soapService.getModelAvto(marka);

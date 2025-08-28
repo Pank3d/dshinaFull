@@ -6,11 +6,29 @@ import basketImage from "../../../shared/assets/BasketImage.svg";
 import { ModalComponent } from "../../../shared/ui/Modal/ModalComponent";
 import { useBasketStore } from "../BasketStore";
 import { ItemInBasket } from "./ItemInBasket/ItemInBasket";
+import { useSendOrderToTelegram } from "../../markiAvto/api/query";
+import { OrderForm } from "./OrderForm/OrderForm";
+import { SuccessModal } from "../../../shared/ui/SuccessModal/SuccessModal";
 
 export const BasketComponent = () => {
   const [opened, setOpened] = useState(false);
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const store = useBasketStore();
   const itemCount = store.basketArray.length;
+  const sendOrderMutation = useSendOrderToTelegram(
+    () => {
+      // onSuccess
+      store.clearBasket();
+      setShowOrderForm(false);
+      setOpened(false);
+      setShowSuccessModal(true);
+    },
+    (error: any) => {
+      // onError
+      alert('Ошибка при отправке заказа: ' + error.message);
+    }
+  );
 
   const getTotalPrice = () => {
     return store.basketArray.reduce((total, item) => {
@@ -40,6 +58,30 @@ export const BasketComponent = () => {
     }, 0);
 
     return maxTime;
+  };
+
+  const handleOrderClick = () => {
+    if (store.basketArray.length === 0) return;
+    setShowOrderForm(true);
+  };
+
+  const handleOrderSubmit = (contactData: { phone: string; telegram: string }) => {
+    const orderData = {
+      customerName: 'Клиент с сайта',
+      email: '',
+      phone: contactData.phone,
+      telegram: contactData.telegram,
+      items: store.basketArray.map(item => ({
+        name: item.name,
+        code: item.code,
+        price: item.whpr?.wh_price_rest?.[0]?.price_rozn || item.whpr?.wh_price_rest?.[0]?.price || 0,
+        marka: item.marka,
+        model: item.model
+      })),
+      totalPrice: getTotalPrice()
+    };
+
+    sendOrderMutation.mutate(orderData);
   };
 
   return (
@@ -87,12 +129,34 @@ export const BasketComponent = () => {
                     Общая стоимость: {getTotalPrice().toLocaleString()} ₽
                   </strong>
                 </div>
-                <button className={style.checkoutButton}>Оформить заказ</button>
+                <button 
+                  className={style.checkoutButton}
+                  onClick={handleOrderClick}
+                  disabled={sendOrderMutation.isPending}
+                >
+                  Оформить заказ
+                </button>
               </div>
             </>
           )}
         </div>
       </ModalComponent>
+      
+      <ModalComponent
+        opened={showOrderForm}
+        close={() => setShowOrderForm(false)}
+        title="Оформление заказа"
+      >
+        <OrderForm 
+          onSubmit={handleOrderSubmit}
+          sendOrderMutation={sendOrderMutation}
+        />
+      </ModalComponent>
+      
+      <SuccessModal 
+        opened={showSuccessModal}
+        close={() => setShowSuccessModal(false)}
+      />
     </>
   );
 };
