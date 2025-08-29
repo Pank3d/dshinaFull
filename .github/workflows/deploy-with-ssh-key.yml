@@ -1,4 +1,4 @@
-name: Deploy Full Stack Application
+name: Deploy Full Stack with SSH Key
 
 on:
   push:
@@ -13,16 +13,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: Setup SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H 212.8.227.80 >> ~/.ssh/known_hosts
+      
     - name: Deploy Full Stack to Server
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: 212.8.227.80
-        username: root
-        password: ${{ secrets.SERVER_PASSWORD }}
-        port: 22
-        command_timeout: 30m
-        insecure: true
-        script: |
+      run: |
+        ssh -i ~/.ssh/id_rsa root@212.8.227.80 << 'EOF'
           echo "🚀 Starting full stack deployment..."
           
           # Обновление системы и установка базовых пакетов
@@ -44,7 +44,7 @@ jobs:
             chmod +x /usr/local/bin/docker-compose
           fi
           
-          # Запуск Docker если не запущен
+          # Запуск Docker
           systemctl start docker
           systemctl enable docker
           
@@ -52,7 +52,7 @@ jobs:
           mkdir -p /var/www
           cd /var/www
           
-          # Остановка всех контейнеров если запущены
+          # Остановка контейнеров
           if [ -d "dshina" ]; then
             cd dshina
             docker-compose down 2>/dev/null || true
@@ -60,56 +60,32 @@ jobs:
             cd ..
           fi
           
-          # Удаление старой версии и клонирование новой
+          # Клонирование проекта
           rm -rf dshina
           git clone ${{ github.server_url }}/${{ github.repository }}.git dshina
           cd dshina
-          
-          # Переключение на нужную ветку
           git checkout ${{ github.ref_name }}
           
-          echo "📝 Creating environment file..."
-          
           # Создание .env файла
-          cat > .env << 'EOF'
-          # Backend Environment
+          cat > .env << 'EOL'
           NODE_ENV=production
           PORT=4000
-          
-          # Frontend Environment  
           NEXT_PUBLIC_BASE_URL=http://212.8.227.80:4000
+          BOT_TOKEN=your-telegram-bot-token
+          CHAT_ID=your-telegram-chat-id
+          EOL
           
-          # Telegram Bot Environment
-          BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN || 'your-telegram-bot-token' }}
-          CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID || 'your-telegram-chat-id' }}
-          EOF
-          
-          echo "🏗️ Building and starting all services..."
-          
-          # Сборка и запуск через Docker Compose
+          echo "🏗️ Building and starting services..."
           docker-compose build --no-cache
           docker-compose up -d
           
-          echo "⏳ Waiting for services to start..."
+          echo "⏳ Waiting for services..."
           sleep 60
           
-          # Проверка статуса контейнеров
           echo "📊 Services status:"
           docker-compose ps
           
-          # Проверка логов
-          echo "📋 Recent logs:"
-          docker-compose logs --tail=10 backend
-          docker-compose logs --tail=10 frontend
-          docker-compose logs --tail=10 telegram-bot
-          
-          echo "✅ Full stack deployment completed!"
-          echo ""
-          echo "🌐 Services are accessible at:"
-          echo "  - Frontend: http://212.8.227.80:3000"
-          echo "  - Backend API: http://212.8.227.80:4000"  
-          echo "  - Telegram Bot: http://212.8.227.80:3001"
-          echo "  - Nginx Proxy: http://212.8.227.80 (if enabled)"
-          echo ""
-          echo "🔧 To check services status: docker-compose ps"
-          echo "📋 To view logs: docker-compose logs [service-name]"
+          echo "✅ Deployment completed!"
+          echo "Frontend: http://212.8.227.80:3000"
+          echo "Backend: http://212.8.227.80:4000"
+        EOF
