@@ -76,12 +76,17 @@ jobs:
           NODE_ENV=production
           PORT=4000
           
+          # API Configuration
+          BASE_URL=${{ secrets.BASE_URL }}
+          LOGIN=${{ secrets.LOGIN }}
+          PASSWORD=${{ secrets.PASSWORD }}
+          
           # Frontend Environment  
           NEXT_PUBLIC_BASE_URL=http://212.8.227.80:4000
           
           # Telegram Bot Environment
-          BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN || 'your-telegram-bot-token' }}
-          CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID || 'your-telegram-chat-id' }}
+          BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}
           EOF
           
           echo "🏗️ Building and starting all services..."
