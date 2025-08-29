@@ -6,9 +6,10 @@ README.md
 .env
 .env.local
 .env.production.local
-.env.staging.local
+.env.development.local
+.next
 .git
 .gitignore
-.next
-.vercel
-*.md
+.github
+coverage
+.turbo
