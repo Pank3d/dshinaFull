@@ -13,7 +13,16 @@ const nextConfig = {
         protocol: "https",
         hostname: "api-b2b.pwrs.ru",
       },
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+      {
+        protocol: "http",
+        hostname: "**",
+      },
     ],
+    unoptimized: true,
   },
   async rewrites() {
     return [

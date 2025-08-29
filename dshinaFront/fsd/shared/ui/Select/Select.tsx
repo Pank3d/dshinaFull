@@ -6,6 +6,8 @@ interface FormikMantineSelectProps extends FieldProps {
   placeholder: string;
   label: string;
   searchable?: boolean;
+  onChange?: (value: any) => void;
+  onReset?: () => void;
   disabled?: boolean;
   onChangeFromParent: (value: string) => void;
 }
@@ -18,14 +20,19 @@ const SelectComponent = ({
   label,
   searchable,
   disabled,
+  onChange,
+  onReset,
   onChangeFromParent,
 }: FormikMantineSelectProps) => {
   const handleChange = (value: string | null) => {
-    form.setFieldValue(field.name, value || '');
-    onChangeFromParent(value || '');
+    form.setFieldValue(field.name, value || "");
+    onChangeFromParent(value || "");
+    if (typeof onChange === "function") {
+      onChange(value);
+    }
   };
 
-  return (
+  return (  
     <Select
       label={label}
       placeholder={placeholder}

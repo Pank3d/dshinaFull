@@ -1,0 +1,49 @@
+# Prettier Configuration
+
+## Что настроено
+
+1. **Prettier** - автоматическое форматирование кода
+2. **ESLint integration** - интеграция с ESLint
+3. **Конфигурация** в `.prettierrc`
+4. **Исключения** в `.prettierignore`
+
+## Доступные команды
+
+```bash
+# Отформатировать все файлы
+npm run format
+
+# Проверить форматирование без изменений
+npm run format:check
+
+# Отформатировать конкретный файл
+npx prettier --write path/to/file.tsx
+
+# Проверить конкретный файл
+npx prettier --check path/to/file.tsx
+```
+
+## Настройки форматирования
+
+- **Точки с запятой**: включены
+- **Одинарные кавычки**: отключены (используются двойные)
+- **Максимальная длина строки**: 80 символов
+- **Отступы**: 2 пробела
+- **Запятые в конце**: ES5 стиль
+- **Скобки**: пробелы внутри объектов
+
+## Интеграция с редактором
+
+### VS Code
+1. Установите расширение "Prettier - Code formatter"
+2. Добавьте в настройки VS Code:
+```json
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
+```
+
+### WebStorm/IntelliJ IDEA
+1. Откройте Settings → Languages & Frameworks → JavaScript → Prettier
+2. Включите "On code reformat" и "On save"

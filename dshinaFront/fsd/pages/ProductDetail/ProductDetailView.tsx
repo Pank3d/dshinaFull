@@ -3,6 +3,12 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Thumbs } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/thumbs";
 import style from "./ProductDetailView.module.scss";
 import { GoodsPriceRest } from "../../entities/markiAvto/api/types";
 import { ButtonComponent } from "../../shared/ui/Button";
@@ -17,11 +23,12 @@ interface ProductDetailViewProps {
 export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
   product,
 }) => {
-  const [selectedImage, setSelectedImage] = useState<string>(
-    product.img_big_my || product.img_small
-  );
+  const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
   const { data: dataWarehouses } = useGetWarehouses();
   const [alreadyAdded, setAlreadyAdded] = useState(false);
+
+  // Создаем массив изображений для слайдера
+  const images = [product.img_big_pish].filter(Boolean); // Убираем пустые значения
 
   const store = useBasketStore();
   const router = useRouter();
@@ -74,40 +81,64 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
 
       <div className={style.productContent}>
         <div className={style.imageSection}>
-          <div className={style.mainImage}>
-            {selectedImage ? (
-              <Image
-                src={selectedImage}
-                alt={product.name}
-                width={400}
-                height={400}
-                className={style.productImage}
-              />
-            ) : (
-              <div className={style.noImage}>
-                <span>Нет изображения</span>
-              </div>
-            )}
-          </div>
+          {images.length > 0 ? (
+            <>
+              {/* Основной слайдер */}
+              <Swiper
+                modules={[Navigation, Pagination, Thumbs]}
+                thumbs={{ swiper: thumbsSwiper }}
+                navigation={true}
+                pagination={{ clickable: true }}
+                className={style.mainSwiper}
+                spaceBetween={10}
+                slidesPerView={1}
+              >
+                {images.map((image, index) => (
+                  <SwiperSlide key={index}>
+                    <div className={style.mainImage}>
+                      <Image
+                        src={image}
+                        alt={`${product.name} - изображение ${index + 1}`}
+                        width={400}
+                        height={400}
+                        className={style.productImage}
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
 
-          <div className={style.thumbnails}>
-            {product.img_big_pish &&
-              product.img_big_pish !== product.img_big_my && (
-                <button
-                  className={`${style.thumbnail} ${
-                    selectedImage === product.img_big_pish ? style.active : ""
-                  }`}
-                  onClick={() => setSelectedImage(product.img_big_pish)}
+              {/* Миниатюры слайдер (если больше одного изображения) */}
+              {images.length > 1 && (
+                <Swiper
+                  onSwiper={setThumbsSwiper}
+                  spaceBetween={10}
+                  slidesPerView={4}
+                  freeMode={true}
+                  watchSlidesProgress={true}
+                  className={style.thumbsSwiper}
+                  modules={[Thumbs]}
                 >
-                  <Image
-                    src={product.img_big_pish}
-                    alt="Дополнительное фото"
-                    width={80}
-                    height={80}
-                  />
-                </button>
+                  {images.map((image, index) => (
+                    <SwiperSlide key={index}>
+                      <div className={style.thumbnail}>
+                        <Image
+                          src={image}
+                          alt={`Миниатюра ${index + 1}`}
+                          width={80}
+                          height={80}
+                        />
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
               )}
-          </div>
+            </>
+          ) : (
+            <div className={style.noImage}>
+              <span>Нет изображения</span>
+            </div>
+          )}
 
           {product.whpr?.wh_price_rest &&
             product.whpr.wh_price_rest.length > 0 && (
@@ -118,7 +149,6 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                     .filter((item) => item.rest > 0)
                     .map((item, index) => {
                       const warehouse = getWarehouseInfo(item.wrh);
-                      console.log(warehouse)
                       return (
                         <div key={index} className={style.warehouseItem}>
                           <div className={style.warehouseName}>
