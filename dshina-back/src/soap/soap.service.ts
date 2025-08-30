@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 import * as soap from 'soap';
 import { Injectable } from '@nestjs/common';
 import { carBrands } from 'src/markiReady/markiReady';
+import { FindTyreFilter, ResultFindTyre } from 'src/types/soap';
 
 dotenv.config();
 
@@ -182,5 +183,41 @@ export class SoapService {
     });
     
     return response?.GetGoodsByCarResult ?? [];
+  }
+
+  async findTyre(
+    filter: FindTyreFilter,
+    page: number = 0,
+    pageSize: number = 50,
+  ): Promise<ResultFindTyre> {
+    if (pageSize > 2000) {
+      throw new Error('Размер страницы не может превышать 2000');
+    }
+
+    const client = await this.createSoapClient();
+    
+    try {
+      const [response] = await client.GetFindTyreAsync({
+        login: this.LOGIN,
+        password: this.PASSWORD,
+        filter: filter,
+        page: page,
+        pageSize: pageSize,
+      });
+
+      return {
+        currencyRate: response?.GetFindTyreResult?.currencyRate,
+        price_rest_list: response?.GetFindTyreResult?.price_rest_list || [],
+        totalPages: response?.GetFindTyreResult?.totalPages || 0,
+        warehouseLogistics: response?.GetFindTyreResult?.warehouseLogistics,
+        error: response?.GetFindTyreResult?.error,
+      };
+    } catch (error) {
+      return {
+        error: `Ошибка при поиске шин: ${error.message}`,
+        price_rest_list: [],
+        totalPages: 0,
+      };
+    }
   }
 }

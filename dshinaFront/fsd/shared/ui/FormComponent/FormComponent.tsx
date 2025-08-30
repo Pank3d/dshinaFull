@@ -65,23 +65,47 @@ export const FormComponent: React.FC<FormComponentProps> = ({
         );
       case "text":
         return (
-          <Field
-            name={field.name}
-            type="text"
-            placeholder={field.placeholder}
-            className={style.textInput}
-            onChange={field.onChange}
-          />
+          <Field name={field.name}>
+            {({ field: formikField, form }: any) => (
+              <input
+                {...formikField}
+                type="text"
+                placeholder={field.placeholder}
+                className={style.textInput}
+                onChange={(e) => {
+                  form.setFieldValue(field.name, e.target.value);
+                  if (field.onChangeFromParent) {
+                    field.onChangeFromParent(e.target.value);
+                  }
+                  if (field.onChange) {
+                    field.onChange(e.target.value);
+                  }
+                }}
+              />
+            )}
+          </Field>
         );
       case "number":
         return (
-          <Field
-            name={field.name}
-            type="number"
-            placeholder={field.placeholder}
-            className={style.numberInput}
-            onChange={field.onChange}
-          />
+          <Field name={field.name}>
+            {({ field: formikField, form }: any) => (
+              <input
+                {...formikField}
+                type="number"
+                placeholder={field.placeholder}
+                className={style.numberInput}
+                onChange={(e) => {
+                  form.setFieldValue(field.name, e.target.value);
+                  if (field.onChangeFromParent) {
+                    field.onChangeFromParent(e.target.value);
+                  }
+                  if (field.onChange) {
+                    field.onChange(e.target.value);
+                  }
+                }}
+              />
+            )}
+          </Field>
         );
       default:
         return null;

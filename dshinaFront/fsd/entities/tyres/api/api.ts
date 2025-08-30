@@ -1,0 +1,17 @@
+import axios from "axios";
+import { FindTyreParams, ResultFindTyre } from "./types";
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:4000/api";
+
+export const findTyre = async (
+  filter: FindTyreParams["filter"],
+  page: number = 0,
+  pageSize: number = 50
+): Promise<ResultFindTyre> => {
+  const response = await axios.post(`${baseUrl}/findTyre`, {
+    filter,
+    page,
+    pageSize,
+  });
+  return response.data;
+};

@@ -1,0 +1,36 @@
+"use client";
+import { FormComponent } from "../../../shared/ui/FormComponent";
+import { useTyreSearchForm } from "../hooks/useTyreSearchForm";
+import style from "../TyreSearch.module.scss";
+import { ButtonComponent } from "../../../shared/ui/Button";
+
+interface TyreFilterFormProps {
+  hookData?: ReturnType<typeof useTyreSearchForm>;
+}
+
+export const TyreFilterForm: React.FC<TyreFilterFormProps> = ({ hookData }) => {
+  const fallbackData = useTyreSearchForm();
+  const data = hookData || fallbackData;
+  const { formValues, fieldsConfig, resetFilters } = data;
+
+  return (
+    <div className={style.formContainer}>
+      <FormComponent
+        fields={fieldsConfig}
+        initialValues={formValues}
+        title="🔍 Поиск шин по параметрам"
+      >
+        {({ resetForm }) => (
+          <ButtonComponent
+            variant="filled"
+            text="Сбросить Фильтр"
+            onClick={() => {
+              resetFilters();
+              resetForm();
+            }}
+          />
+        )}
+      </FormComponent>
+    </div>
+  );
+};

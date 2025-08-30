@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect } from "react";
 import style from "./ProductList.module.scss";
 import {  GoodsPriceRest } from "../../entities/markiAvto/api/types";

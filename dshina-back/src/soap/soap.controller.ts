@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { SoapService } from './soap.service';
+import { FindTyreFilter } from 'src/types/soap';
 
 @Controller('api/')
 export class SoapController {
@@ -73,5 +74,14 @@ export class SoapController {
       year_beg,
       year_end,
     );
+  }
+
+  @Post('findTyre')
+  async findTyre(
+    @Body('filter') filter: FindTyreFilter,
+    @Body('page') page: number = 0,
+    @Body('pageSize') pageSize: number = 50,
+  ) {
+    return this.soapService.findTyre(filter, page, pageSize);
   }
 }
