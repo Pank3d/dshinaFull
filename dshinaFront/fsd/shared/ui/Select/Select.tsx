@@ -42,7 +42,7 @@ const SelectComponent = ({
       value={field.value}
       onChange={(value) => handleChange(value)}
       onBlur={() => form.setFieldTouched(field.name, true)}
-      error={form.touched[field.name] && form.errors[field.name]}
+      error={form.touched[field.name] && form.errors[field.name] ? String(form.errors[field.name]) : undefined}
     />
   );
 };

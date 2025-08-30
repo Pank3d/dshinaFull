@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const code = params.code as string;
-  
+
   const [product, setProduct] = useState<GoodsPriceRest | null>(null);
   const [loading, setLoading] = useState(true);
   const { getProductByCode } = useProductsStore();
@@ -37,7 +37,16 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '400px', gap: '20px' }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "400px",
+          gap: "20px",
+        }}
+      >
         <LoaderComponent />
         <p>Загрузка товара...</p>
       </div>
@@ -46,7 +55,17 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '400px', gap: '20px', textAlign: 'center' }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "400px",
+          gap: "20px",
+          textAlign: "center",
+        }}
+      >
         <h2>Товар не найден</h2>
         <ButtonComponent
           variant="outlined"

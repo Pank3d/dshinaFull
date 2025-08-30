@@ -7,6 +7,7 @@ type ButtonPropsType = {
   onClick?: () => void;
   color?: string;
   disabled?: boolean;
+  className?: string;
 };
 
 export const ButtonComponent = ({
@@ -15,10 +16,11 @@ export const ButtonComponent = ({
   color,
   variant,
   text,
+  className,
 }: ButtonPropsType) => {
   return (
     <Button
-      className={style.buttonCustomStyle}
+      className={`${style.buttonCustomStyle} ${className || ''}`}
       onClick={onClick}
       disabled={disabled}
       color={color}
