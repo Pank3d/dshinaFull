@@ -29,6 +29,9 @@ services:
     build:
       context: ./dshinaFront
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:4000/api}
+        NEXT_PUBLIC_BASE_URL_TELEGRAMSEND: ${NEXT_PUBLIC_BASE_URL_TELEGRAMSEND:-http://localhost:3001}
     container_name: dshina-frontend
     ports:
       - "3000:3000"
