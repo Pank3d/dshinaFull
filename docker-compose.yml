@@ -34,6 +34,7 @@ services:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+      - NEXT_PUBLIC_BASE_URL_TELEGRAMSEND=${NEXT_PUBLIC_BASE_URL_TELEGRAMSEND}
     depends_on:
       - backend
       - telegram-bot

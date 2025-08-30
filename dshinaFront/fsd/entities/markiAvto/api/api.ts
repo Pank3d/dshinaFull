@@ -1,6 +1,7 @@
 import axios from "axios";
 import { GoodsDataResponse } from "./types";
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+const baseUrlTelegramm = process.env.NEXT_PUBLIC_BASE_URL_TELEGRAMSEND;
 
 export const getMarkiAvto = async () => {
   const response = await axios.get(`${baseUrl}/markiAvto`);
@@ -90,6 +91,9 @@ export const sendOrderToTelegram = async (orderData: {
   }>;
   totalPrice: number;
 }) => {
-  const response = await axios.post('http://localhost:3001/api/send-order', orderData);
+  const response = await axios.post(
+    `${baseUrlTelegramm}/api/send-order`,
+    orderData
+  );
   return response.data;
 };
