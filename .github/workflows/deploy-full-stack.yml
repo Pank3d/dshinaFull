@@ -68,23 +68,40 @@ jobs:
           # Переключение на нужную ветку
           git checkout ${{ github.ref_name }}
           
-          echo "📝 Creating environment file..."
+          echo "📝 Creating environment files..."
           
-          # Создание .env файла
+          # Создание .env файла для Docker Compose (корневой)
           cat > .env << 'EOF'
-          # Backend Environment
-          NODE_ENV=production
-          PORT=4000
-          
-          # API Configuration
+          # Variables for docker-compose.yml
           BASE_URL=${{ secrets.BASE_URL }}
           LOGIN=${{ secrets.LOGIN }}
           PASSWORD=${{ secrets.PASSWORD }}
-          
-          # Frontend Environment  
+          TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}
           NEXT_PUBLIC_BASE_URL=http://212.8.227.80:4000
+          NEXT_PUBLIC_BASE_URL_TELEGRAMSEND=${{ secrets.NEXT_PUBLIC_BASE_URL_TELEGRAMSEND }}
+          EOF
           
-          # Telegram Bot Environment
+          # Создание .env файла для Backend
+          cat > dshina-back/.env << 'EOF'
+          NODE_ENV=production
+          PORT=4000
+          BASE_URL=${{ secrets.BASE_URL }}
+          LOGIN=${{ secrets.LOGIN }}
+          PASSWORD=${{ secrets.PASSWORD }}
+          EOF
+          
+          # Создание .env файла для Frontend
+          cat > dshinaFront/.env << 'EOF'
+          NODE_ENV=production
+          NEXT_PUBLIC_BASE_URL=http://212.8.227.80:4000
+          NEXT_PUBLIC_BASE_URL_TELEGRAMSEND=${{ secrets.NEXT_PUBLIC_BASE_URL_TELEGRAMSEND }}
+          EOF
+          
+          # Создание .env файла для Telegram Bot
+          cat > telegram-bot/.env << 'EOF'
+          NODE_ENV=production
+          PORT=3001
           BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
           CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}
           EOF
