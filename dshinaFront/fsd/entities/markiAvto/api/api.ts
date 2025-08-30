@@ -1,7 +1,7 @@
 import axios from "axios";
 import { GoodsDataResponse } from "./types";
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-const baseUrlTelegramm = process.env.NEXT_PUBLIC_BASE_URL_TELEGRAMSEND;
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:4000/api";
+const baseUrlTelegramm = process.env.NEXT_PUBLIC_BASE_URL_TELEGRAMSEND || "http://localhost:3001";
 
 export const getMarkiAvto = async () => {
   const response = await axios.get(`${baseUrl}/markiAvto`);

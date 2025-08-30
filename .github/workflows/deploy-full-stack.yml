@@ -78,7 +78,7 @@ jobs:
           PASSWORD=${{ secrets.PASSWORD }}
           TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}
-          NEXT_PUBLIC_BASE_URL=http://212.8.227.80:4000
+          NEXT_PUBLIC_BASE_URL=http://212.8.227.80/api
           NEXT_PUBLIC_BASE_URL_TELEGRAMSEND=${{ secrets.NEXT_PUBLIC_BASE_URL_TELEGRAMSEND }}
           EOF
           
@@ -94,7 +94,7 @@ jobs:
           # Создание .env файла для Frontend
           cat > dshinaFront/.env << 'EOF'
           NODE_ENV=production
-          NEXT_PUBLIC_BASE_URL=http://212.8.227.80:4000
+          NEXT_PUBLIC_BASE_URL=http://212.8.227.80/api
           NEXT_PUBLIC_BASE_URL_TELEGRAMSEND=${{ secrets.NEXT_PUBLIC_BASE_URL_TELEGRAMSEND }}
           EOF
           
