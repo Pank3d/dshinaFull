@@ -1,0 +1,22 @@
+{
+  "name": "dshina-full",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "dshinaFront",
+    "dshina-back",
+    "telegram-bot"
+  ],
+  "scripts": {
+    "prepare": "husky",
+    "lint:frontend": "cd dshinaFront && npm run lint",
+    "type-check:frontend": "cd dshinaFront && npm run type-check",
+    "lint:backend": "cd dshina-back && npm run lint",
+    "type-check:backend": "cd dshina-back && npm run build",
+    "check:console-logs": "node scripts/check-console-logs.js",
+    "pre-commit-checks": "npm run check:console-logs && npm run type-check:frontend && npm run lint:frontend"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}
