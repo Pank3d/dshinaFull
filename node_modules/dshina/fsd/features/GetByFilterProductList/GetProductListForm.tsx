@@ -17,9 +17,7 @@ export const GetProductListForm = () => {
         {isLoading ? (
           <div className={style.loadingState}>
             <LoaderComponent />
-            <p className={style.loadingText}>
-              Загружаем шины...
-            </p>
+            <p className={style.loadingText}>Загружаем шины...</p>
           </div>
         ) : goodsData && goodsData.length > 0 ? (
           <ProductList data={goodsData} />

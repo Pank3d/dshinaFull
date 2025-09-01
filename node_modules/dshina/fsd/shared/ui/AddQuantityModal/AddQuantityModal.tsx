@@ -30,7 +30,8 @@ export const AddQuantityModal: React.FC<AddQuantityModalProps> = ({
       <div className={style.addQuantityForm}>
         <h3 className={style.formTitle}>Товар недоступен</h3>
         <p className={style.formDescription}>
-          К сожалению, {productName} закончился или уже добавлен в максимальном количестве.
+          К сожалению, {productName} закончился или уже добавлен в максимальном
+          количестве.
         </p>
       </div>
     );

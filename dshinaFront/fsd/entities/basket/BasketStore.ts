@@ -13,18 +13,23 @@ export const useBasketStore = create<BasketState>()(
         // Получаем текущий остаток товара
         const getAvailableQuantity = () => {
           if (item.whpr?.wh_price_rest && item.whpr.wh_price_rest.length > 0) {
-            return item.whpr.wh_price_rest.reduce((total, stock) => total + stock.rest, 0);
+            return item.whpr.wh_price_rest.reduce(
+              (total, stock) => total + stock.rest,
+              0
+            );
           }
           return 0;
         };
 
         const availableQuantity = getAvailableQuantity();
-        
+
         // Проверяем, есть ли товар в корзине
         const state = get();
-        const existingItem = state.basketArray.find(basketItem => basketItem.code === item.code);
+        const existingItem = state.basketArray.find(
+          (basketItem) => basketItem.code === item.code
+        );
         const currentQuantityInBasket = existingItem?.quantity || 0;
-        
+
         // Проверяем, не превышает ли запрашиваемое количество доступное
         if (currentQuantityInBasket + quantity > availableQuantity) {
           return false; // Не можем добавить - недостаточно товара
@@ -35,7 +40,9 @@ export const useBasketStore = create<BasketState>()(
         }));
 
         set((state) => {
-          const existingItemIndex = state.basketArray.findIndex(basketItem => basketItem.code === item.code);
+          const existingItemIndex = state.basketArray.findIndex(
+            (basketItem) => basketItem.code === item.code
+          );
           const newLoadingItems = new Set(state.loadingItems);
           newLoadingItems.delete(item.code);
 
@@ -44,7 +51,8 @@ export const useBasketStore = create<BasketState>()(
             const updatedArray = [...state.basketArray];
             updatedArray[existingItemIndex] = {
               ...updatedArray[existingItemIndex],
-              quantity: (updatedArray[existingItemIndex].quantity || 1) + quantity
+              quantity:
+                (updatedArray[existingItemIndex].quantity || 1) + quantity,
             };
             return {
               basketArray: updatedArray,
@@ -59,7 +67,7 @@ export const useBasketStore = create<BasketState>()(
             };
           }
         });
-        
+
         return true; // Успешно добавлено
       },
 
@@ -68,7 +76,9 @@ export const useBasketStore = create<BasketState>()(
         if (!state || !state.basketArray || !Array.isArray(state.basketArray)) {
           return false;
         }
-        return state.basketArray.some((item: BasketItem) => item && item.code === code);
+        return state.basketArray.some(
+          (item: BasketItem) => item && item.code === code
+        );
       },
 
       isItemLoading: (code: string): boolean => {
@@ -88,7 +98,7 @@ export const useBasketStore = create<BasketState>()(
           if (!state.basketArray || !Array.isArray(state.basketArray)) {
             return state;
           }
-          
+
           const newArray = state.basketArray.filter(
             (item: BasketItem) => item && item.code !== code
           );

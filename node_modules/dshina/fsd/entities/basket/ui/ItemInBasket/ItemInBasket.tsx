@@ -56,7 +56,9 @@ export const ItemInBasket: React.FC<ItemInBasketProps> = ({ item }) => {
           {item.marka} {item.model}
         </p>
         <p className={style.itemCode}>{item.code}</p>
-        <p className={style.itemQuantity}>Количество: {item.quantity || 1} шт</p>
+        <p className={style.itemQuantity}>
+          Количество: {item.quantity || 1} шт
+        </p>
         <p className={style.itemRest}>{getRest()} шт в наличии</p>
       </div>
 

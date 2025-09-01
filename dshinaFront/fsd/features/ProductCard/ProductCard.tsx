@@ -27,7 +27,9 @@ export const ProductCard = ({ dataItem }: { dataItem: GoodsPriceRest }) => {
   const addToBasket = (dataItem: GoodsPriceRest, quantity: number = 1) => {
     const success = store.setBasketArray(dataItem, quantity);
     if (!success) {
-      setErrorMessage("Не удалось добавить товар: недостаточно количества в наличии");
+      setErrorMessage(
+        "Не удалось добавить товар: недостаточно количества в наличии"
+      );
       setShowErrorModal(true);
     }
     return success;
@@ -43,7 +45,9 @@ export const ProductCard = ({ dataItem }: { dataItem: GoodsPriceRest }) => {
   const handleAddToBasketClick = () => {
     const availableQuantity = getAvailableQuantity();
     if (availableQuantity <= 0) {
-      setErrorMessage("Товар отсутствует в наличии или уже добавлен в максимальном количестве");
+      setErrorMessage(
+        "Товар отсутствует в наличии или уже добавлен в максимальном количестве"
+      );
       setShowErrorModal(true);
       return;
     }
@@ -52,7 +56,9 @@ export const ProductCard = ({ dataItem }: { dataItem: GoodsPriceRest }) => {
 
   const getAvailableQuantity = () => {
     const totalInStock = getRest();
-    const alreadyInBasket = store.basketArray.find(item => item.code === dataItem.code)?.quantity || 0;
+    const alreadyInBasket =
+      store.basketArray.find((item) => item.code === dataItem.code)?.quantity ||
+      0;
     return Math.max(0, totalInStock - alreadyInBasket);
   };
 
