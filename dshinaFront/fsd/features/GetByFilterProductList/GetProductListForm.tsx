@@ -17,7 +17,7 @@ export const GetProductListForm = () => {
         {isLoading ? (
           <div className={style.loadingState}>
             <LoaderComponent />
-            <p style={{ marginTop: "16px", color: "#6b7280" }}>
+            <p className={style.loadingText}>
               Загружаем шины...
             </p>
           </div>

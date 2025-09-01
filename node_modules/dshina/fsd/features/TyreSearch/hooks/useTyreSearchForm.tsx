@@ -26,6 +26,8 @@ export const useTyreSearchForm = () => {
   const [season, setSeason] = useState("");
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Восстановление данных из URL
@@ -36,6 +38,8 @@ export const useTyreSearchForm = () => {
     const seasonParam = searchParams.get("season") || "";
     const priceMinParam = searchParams.get("priceMin") || "";
     const priceMaxParam = searchParams.get("priceMax") || "";
+    const pageParam = searchParams.get("page") || "0";
+    const pageSizeParam = searchParams.get("per_page") || "20";
 
     setWidth(widthParam);
     setHeight(heightParam);
@@ -43,6 +47,8 @@ export const useTyreSearchForm = () => {
     setSeason(seasonParam);
     setPriceMin(priceMinParam);
     setPriceMax(priceMaxParam);
+    setPage(parseInt(pageParam, 10));
+    setPageSize(parseInt(pageSizeParam, 10));
     setIsInitialized(true);
   }, [searchParams]);
 
@@ -71,7 +77,26 @@ export const useTyreSearchForm = () => {
         season,
         priceMin,
         priceMax,
+        page: page.toString(),
+        per_page: pageSize.toString(),
       });
+    }
+  }, [
+    width,
+    height,
+    diameter,
+    season,
+    priceMin,
+    priceMax,
+    page,
+    pageSize,
+    isInitialized,
+  ]);
+
+  // Сброс страницы при изменении фильтров
+  useEffect(() => {
+    if (isInitialized && page > 0) {
+      setPage(0);
     }
   }, [width, height, diameter, season, priceMin, priceMax, isInitialized]);
 
@@ -107,7 +132,17 @@ export const useTyreSearchForm = () => {
     data: tyresData,
     isLoading: isLoadingTyres,
     error: errorTyres,
-  } = useFindTyre(filter, 0, 50, shouldSearch);
+  } = useFindTyre(filter, page, pageSize, shouldSearch);
+
+  // Обработчики пагинации
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage - 1); // API использует 0-based индексацию
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setPage(0); // Сброс на первую страницу
+  };
 
   // Конфигурация полей
   const fieldsConfig: FieldConfig[] = [
@@ -174,6 +209,7 @@ export const useTyreSearchForm = () => {
     setSeason("");
     setPriceMin("");
     setPriceMax("");
+    setPage(0);
     // URL будет обновлен автоматически через useEffect
     // Сбрасываем кеш
     queryClient.removeQueries({
@@ -192,5 +228,20 @@ export const useTyreSearchForm = () => {
     tyresData: tyresData?.price_rest_list?.TyrePriceRest,
     isLoading: shouldSearch ? isLoadingTyres : false,
     error: shouldSearch ? errorTyres : null,
+    // Пагинация
+    pagination: {
+      currentPage: page + 1, // Конвертируем в 1-based для UI
+      pageSize,
+      totalItems: tyresData?.totalPages
+        ? tyresData.totalPages * pageSize
+        : tyresData?.price_rest_list?.TyrePriceRest?.length || 0,
+      totalPages:
+        tyresData?.totalPages ||
+        Math.ceil(
+          (tyresData?.price_rest_list?.TyrePriceRest?.length || 0) / pageSize
+        ),
+      onPageChange: handlePageChange,
+      onPageSizeChange: handlePageSizeChange,
+    },
   };
 };

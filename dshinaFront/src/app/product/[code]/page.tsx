@@ -7,6 +7,7 @@ import { GoodsPriceRest } from "../../../../fsd/entities/markiAvto/api/types";
 import { LoaderComponent } from "../../../../fsd/shared/ui/Loader/Loader";
 import { ButtonComponent } from "../../../../fsd/shared/ui/Button";
 import { useProductsStore } from "../../../../fsd/entities/products";
+import styles from "./page.module.scss";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -37,16 +38,7 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "400px",
-          gap: "20px",
-        }}
-      >
+      <div className={styles.loadingContainer}>
         <LoaderComponent />
         <p>Загрузка товара...</p>
       </div>
@@ -55,17 +47,7 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "400px",
-          gap: "20px",
-          textAlign: "center",
-        }}
-      >
+      <div className={styles.notFoundContainer}>
         <h2>Товар не найден</h2>
         <ButtonComponent
           variant="outlined"

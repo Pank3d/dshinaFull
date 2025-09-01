@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { GoodsPriceRest } from "../markiAvto/api/types";
-import { BasketState } from "./types";
+import { BasketState, BasketItem } from "./types";
 
 export const useBasketStore = create<BasketState>()(
   persist(
@@ -9,19 +9,58 @@ export const useBasketStore = create<BasketState>()(
       basketArray: [],
       loadingItems: new Set<string>(),
 
-      setBasketArray: (item: GoodsPriceRest) => {
+      setBasketArray: (item: GoodsPriceRest, quantity: number = 1): boolean => {
+        // Получаем текущий остаток товара
+        const getAvailableQuantity = () => {
+          if (item.whpr?.wh_price_rest && item.whpr.wh_price_rest.length > 0) {
+            return item.whpr.wh_price_rest.reduce((total, stock) => total + stock.rest, 0);
+          }
+          return 0;
+        };
+
+        const availableQuantity = getAvailableQuantity();
+        
+        // Проверяем, есть ли товар в корзине
+        const state = get();
+        const existingItem = state.basketArray.find(basketItem => basketItem.code === item.code);
+        const currentQuantityInBasket = existingItem?.quantity || 0;
+        
+        // Проверяем, не превышает ли запрашиваемое количество доступное
+        if (currentQuantityInBasket + quantity > availableQuantity) {
+          return false; // Не можем добавить - недостаточно товара
+        }
+
         set((state) => ({
           loadingItems: new Set([...state.loadingItems, item.code]),
         }));
 
         set((state) => {
+          const existingItemIndex = state.basketArray.findIndex(basketItem => basketItem.code === item.code);
           const newLoadingItems = new Set(state.loadingItems);
           newLoadingItems.delete(item.code);
-          return {
-            basketArray: [...state.basketArray, item],
-            loadingItems: newLoadingItems,
-          };
+
+          if (existingItemIndex >= 0) {
+            // Если товар уже есть в корзине, увеличиваем количество
+            const updatedArray = [...state.basketArray];
+            updatedArray[existingItemIndex] = {
+              ...updatedArray[existingItemIndex],
+              quantity: (updatedArray[existingItemIndex].quantity || 1) + quantity
+            };
+            return {
+              basketArray: updatedArray,
+              loadingItems: newLoadingItems,
+            };
+          } else {
+            // Если товара нет в корзине, добавляем новый
+            const newItem: BasketItem = { ...item, quantity };
+            return {
+              basketArray: [...state.basketArray, newItem],
+              loadingItems: newLoadingItems,
+            };
+          }
         });
+        
+        return true; // Успешно добавлено
       },
 
       isItemInBasket: (code: string): boolean => {
@@ -29,7 +68,7 @@ export const useBasketStore = create<BasketState>()(
         if (!state || !state.basketArray || !Array.isArray(state.basketArray)) {
           return false;
         }
-        return state.basketArray.some((item: GoodsPriceRest) => item && item.code === code);
+        return state.basketArray.some((item: BasketItem) => item && item.code === code);
       },
 
       isItemLoading: (code: string): boolean => {
@@ -51,7 +90,7 @@ export const useBasketStore = create<BasketState>()(
           }
           
           const newArray = state.basketArray.filter(
-            (item: GoodsPriceRest) => item && item.code !== code
+            (item: BasketItem) => item && item.code !== code
           );
 
           const newLoadingItems = new Set(state.loadingItems);

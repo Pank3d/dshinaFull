@@ -87,6 +87,7 @@ export const sendOrderToTelegram = async (orderData: {
     name: string;
     code: string;
     price: number;
+    quantity: number;
     marka: string;
     model: string;
   }>;

@@ -36,7 +36,8 @@ export const BasketComponent = () => {
         const price =
           item.whpr.wh_price_rest[0].price_rozn ||
           item.whpr.wh_price_rest[0].price;
-        return total + price;
+        const quantity = item.quantity || 1;
+        return total + price * quantity;
       }
       return total;
     }, 0);
@@ -81,12 +82,12 @@ export const BasketComponent = () => {
           item.whpr?.wh_price_rest?.[0]?.price_rozn ||
           item.whpr?.wh_price_rest?.[0]?.price ||
           0,
+        quantity: item.quantity || 1,
         marka: item.marka,
         model: item.model,
       })),
       totalPrice: getTotalPrice(),
     };
-
     sendOrderMutation.mutate(orderData);
   };
 

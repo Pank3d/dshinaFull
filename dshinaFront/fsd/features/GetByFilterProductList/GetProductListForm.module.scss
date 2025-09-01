@@ -112,6 +112,11 @@
   }
 }
 
+.loadingText {
+  margin-top: 16px;
+  color: #6b7280;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

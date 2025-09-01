@@ -15,4 +15,7 @@ npm run type-check:frontend
 echo "🧹 Running ESLint..."
 npm run lint:frontend
 
+echo "Running Format"
+npm run format:frontend
+
 echo "✅ All pre-commit checks passed!"

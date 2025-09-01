@@ -12,6 +12,7 @@
     "lint:frontend": "cd dshinaFront && npm run lint",
     "type-check:frontend": "cd dshinaFront && npm run type-check",
     "lint:backend": "cd dshina-back && npm run lint",
+    "format:frontend": "cd dshinaFront && npm run format",
     "type-check:backend": "cd dshina-back && npm run build",
     "check:console-logs": "node scripts/check-console-logs.js",
     "pre-commit-checks": "npm run check:console-logs && npm run type-check:frontend && npm run lint:frontend"

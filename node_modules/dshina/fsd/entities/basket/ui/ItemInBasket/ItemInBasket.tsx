@@ -3,12 +3,12 @@
 import React from "react";
 import Image from "next/image";
 import style from "./ItemInBasket.module.scss";
-import { GoodsPriceRest } from "../../../markiAvto/api/types";
+import { BasketItem } from "../../types";
 import { useBasketStore } from "../../BasketStore";
 import { LoaderComponent } from "../../../../shared/ui/Loader/Loader";
 
 interface ItemInBasketProps {
-  item: GoodsPriceRest;
+  item: BasketItem;
 }
 
 export const ItemInBasket: React.FC<ItemInBasketProps> = ({ item }) => {
@@ -56,11 +56,19 @@ export const ItemInBasket: React.FC<ItemInBasketProps> = ({ item }) => {
           {item.marka} {item.model}
         </p>
         <p className={style.itemCode}>{item.code}</p>
-        <p className={style.itemRest}>{getRest()} шт </p>
+        <p className={style.itemQuantity}>Количество: {item.quantity || 1} шт</p>
+        <p className={style.itemRest}>{getRest()} шт в наличии</p>
       </div>
 
       <div className={style.priceSection}>
-        <div className={style.price}>{getPrice().toLocaleString()}р</div>
+        <div className={style.price}>
+          {(getPrice() * (item.quantity || 1)).toLocaleString()}р
+          {item.quantity && item.quantity > 1 && (
+            <small className={style.pricePerUnit}>
+              ({getPrice().toLocaleString()}р за шт)
+            </small>
+          )}
+        </div>
         <button
           className={`${style.deleteButton} ${isDeleting ? style.deleting : ""}`}
           onClick={() => deleteBasketArrayMethod()}

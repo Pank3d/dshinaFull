@@ -3,11 +3,12 @@ import { LoaderComponent } from "../../shared/ui/Loader/Loader";
 import { ProductList } from "../ProductList";
 import { TyreFilterForm } from "./components/TyreFilterForm";
 import { useTyreSearchForm } from "./hooks/useTyreSearchForm";
+import { Pagination } from "../../shared/ui/Pagination";
 import style from "./TyreSearch.module.scss";
 
 export const TyreSearchForm = () => {
   const hookData = useTyreSearchForm();
-  const { tyresData, isLoading, error } = hookData;
+  const { tyresData, isLoading, error, pagination } = hookData;
 
   return (
     <div className="p-7">
@@ -17,10 +18,20 @@ export const TyreSearchForm = () => {
         {isLoading ? (
           <div className={style.loadingState}>
             <LoaderComponent />
-            <p style={{ marginTop: "16px", color: "#6b7280" }}>Поиск шин...</p>
+            <p className={style.loadingText}>Поиск шин...</p>
           </div>
         ) : tyresData && tyresData.length > 0 ? (
-          <ProductList data={tyresData} />
+          <>
+            <ProductList data={tyresData} />
+            <Pagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              itemsPerPage={pagination.pageSize}
+              totalItems={pagination.totalItems}
+              onPageChange={pagination.onPageChange}
+              onItemsPerPageChange={pagination.onPageSizeChange}
+            />
+          </>
         ) : (
           <p className={style.anyText}>
             🔍 Здесь будут найденные шины
