@@ -63,7 +63,6 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
     return 0;
   };
 
-
   return (
     <div className={style.productDetail}>
       <div className={style.breadcrumb}>
@@ -132,7 +131,6 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
               <span>Нет изображения</span>
             </div>
           )}
-
         </div>
 
         <div className={style.infoSection}>
