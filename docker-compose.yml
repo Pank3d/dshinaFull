@@ -30,15 +30,15 @@ services:
       context: ./dshinaFront
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:4000/api}
-        NEXT_PUBLIC_BASE_URL_TELEGRAMSEND: ${NEXT_PUBLIC_BASE_URL_TELEGRAMSEND:-http://localhost:3001}
+        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-https://dmshina.ru/api}
+        NEXT_PUBLIC_BASE_URL_TELEGRAMSEND: ${NEXT_PUBLIC_BASE_URL_TELEGRAMSEND:-https://dmshina.ru/telegram}
     container_name: dshina-frontend
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL:-http://localhost:4000/api}
-      - NEXT_PUBLIC_BASE_URL_TELEGRAMSEND=${NEXT_PUBLIC_BASE_URL_TELEGRAMSEND:-http://localhost:3001}
+      - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL:-https://dmshina.ru/api}
+      - NEXT_PUBLIC_BASE_URL_TELEGRAMSEND=${NEXT_PUBLIC_BASE_URL_TELEGRAMSEND:-https://dmshina.ru/telegram}
     depends_on:
       - backend
       - telegram-bot
