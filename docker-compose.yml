@@ -78,7 +78,7 @@ services:
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - /etc/letsencrypt/live/dmshina.ru:/etc/nginx/ssl:ro  # для SSL сертификатов
+      - ./ssl:/ssl:ro  # для SSL сертификатов
     depends_on:
       - backend
       - frontend
