@@ -14,7 +14,6 @@ import { GoodsPriceRest } from "../../entities/markiAvto/api/types";
 import { ButtonComponent } from "../../shared/ui/Button";
 import { useBasketStore } from "../../entities/basket";
 import { LoaderComponent } from "../../shared/ui/Loader/Loader";
-import { useGetWarehouses } from "../../entities/markiAvto/api/query";
 
 interface ProductDetailViewProps {
   product: GoodsPriceRest;
@@ -24,7 +23,6 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
   product,
 }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
-  const { data: dataWarehouses } = useGetWarehouses();
   const [alreadyAdded, setAlreadyAdded] = useState(false);
 
   // Создаем массив изображений для слайдера
@@ -65,11 +63,6 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
     return 0;
   };
 
-  const getWarehouseInfo = (warehouseId: number) => {
-    return dataWarehouses?.find(
-      (warehouse: any) => warehouse.id === warehouseId
-    );
-  };
 
   return (
     <div className={style.productDetail}>
@@ -140,36 +133,6 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
             </div>
           )}
 
-          {product.whpr?.wh_price_rest &&
-            product.whpr.wh_price_rest.length > 0 && (
-              <div className={style.warehouseInfo}>
-                <h4>Наличие на складах:</h4>
-                <div className={style.warehouseList}>
-                  {product.whpr.wh_price_rest
-                    .filter((item) => item.rest > 0)
-                    .map((item, index) => {
-                      const warehouse = getWarehouseInfo(item.wrh);
-                      return (
-                        <div key={index} className={style.warehouseItem}>
-                          <div className={style.warehouseName}>
-                            {warehouse?.name || `Склад #${item.wrh}`}
-                          </div>
-                          <div className={style.warehouseDetails}>
-                            <span className={style.warehouseStock}>
-                              {item.rest} шт.
-                            </span>
-                            {warehouse?.logisticDays !== undefined && (
-                              <span className={style.logistickDate}>
-                                Поставка: {warehouse.logisticDays} дней
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                </div>
-              </div>
-            )}
         </div>
 
         <div className={style.infoSection}>
