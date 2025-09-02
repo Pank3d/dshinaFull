@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Основные страницы
+Allow: /product/
+Allow: /catalog/
+
+# Запретить служебные страницы
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Sitemap
+Sitemap: https://dmshina.ru/sitemap.xml
+
+# Crawl-delay для предотвращения перегрузки сервера
+Crawl-delay: 1

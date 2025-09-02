@@ -63,8 +63,71 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
     return 0;
   };
 
+  // Структурированные данные для товара
+  const productSchema = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": product.name,
+    "description": `Автомобильная шина ${product.marka} ${product.model}. ${product.type ? `Тип: ${product.type}.` : ''} ${product.color ? `Цвет: ${product.color}.` : ''} ${product.thorn ? 'Шипованная.' : 'Нешипованная.'}`,
+    "sku": product.code,
+    "mpn": product.code,
+    "brand": {
+      "@type": "Brand",
+      "name": product.marka
+    },
+    "model": product.model,
+    "category": "Автомобильные шины",
+    "image": product.img_big_pish || "",
+    "offers": {
+      "@type": "Offer",
+      "url": `https://dmshina.ru/product/${product.code}`,
+      "priceCurrency": "RUB",
+      "price": getPrice(),
+      "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 дней
+      "availability": getRest() > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "DSHINA.RU"
+      }
+    },
+    "additionalProperty": [
+      {
+        "@type": "PropertyValue",
+        "name": "Марка",
+        "value": product.marka
+      },
+      {
+        "@type": "PropertyValue", 
+        "name": "Модель",
+        "value": product.model
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "Тип",
+        "value": product.type
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "Цвет", 
+        "value": product.color
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "Шипованная",
+        "value": product.thorn ? "Да" : "Нет"
+      }
+    ]
+  };
+
   return (
-    <div className={style.productDetail}>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productSchema)
+        }}
+      />
+      <div className={style.productDetail}>
       <div className={style.breadcrumb}>
         <button onClick={() => router.back()} className={style.backButton}>
           ← Назад к каталогу
@@ -224,5 +287,6 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
         </div>
       </div>
     </div>
+    </>
   );
 };
