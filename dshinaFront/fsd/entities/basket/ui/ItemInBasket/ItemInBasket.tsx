@@ -6,6 +6,8 @@ import style from "./ItemInBasket.module.scss";
 import { BasketItem } from "../../types";
 import { useBasketStore } from "../../BasketStore";
 import { LoaderComponent } from "../../../../shared/ui/Loader/Loader";
+import { ImageWithoutWatermark } from "../../../../shared/ui/ImageWithoutWatermark";
+import { getPriceWithMarkup, getTotalRest } from "../../../../shared/utils/priceUtils";
 
 interface ItemInBasketProps {
   item: BasketItem;
@@ -22,32 +24,25 @@ export const ItemInBasket: React.FC<ItemInBasketProps> = ({ item }) => {
   };
 
   const getPrice = () => {
-    if (item.whpr?.wh_price_rest && item.whpr.wh_price_rest.length > 0) {
-      return (
-        item.whpr.wh_price_rest[0].price_rozn ||
-        item.whpr.wh_price_rest[0].price
-      );
-    }
-    return 0;
+    return getPriceWithMarkup(item);
   };
 
   const getRest = () => {
-    if (item.whpr?.wh_price_rest && item.whpr.wh_price_rest.length > 0) {
-      return item.whpr.wh_price_rest.reduce((total, stock) => total + stock.rest, 0);
-    }
-    return 0;
+    return getTotalRest(item);
   };
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity <= 0 || newQuantity > getRest()) return;
-    
+
     const success = updateQuantity(item.code, newQuantity);
     if (success) {
       setTempQuantity(newQuantity);
     }
   };
 
-  const handleQuantityInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQuantityInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const value = parseInt(e.target.value) || 1;
     setTempQuantity(value);
   };
@@ -69,15 +64,16 @@ export const ItemInBasket: React.FC<ItemInBasketProps> = ({ item }) => {
   return (
     <div className={style.itemContainer}>
       <div className={style.imageContainer}>
-        {item.img_small && (
-          <Image
-            src={item.img_small}
-            alt={item.name}
-            width={80}
-            height={80}
-            className={style.itemImage}
-          />
-        )}
+        <ImageWithoutWatermark
+          imgBigMy={item.img_big_my}
+          imgBigPish={item.img_big_pish}
+          imgSmall={item.img_small}
+          alt={item.name}
+          width={80}
+          height={80}
+          className={style.itemImage}
+          useSmallImage={true}
+        />
       </div>
 
       <div className={style.itemInfo}>
@@ -98,13 +94,13 @@ export const ItemInBasket: React.FC<ItemInBasketProps> = ({ item }) => {
                 className={style.quantityInput}
               />
               <div className={style.quantityButtons}>
-                <button 
+                <button
                   onClick={handleQuantitySubmit}
                   className={style.quantityConfirm}
                 >
                   ✓
                 </button>
-                <button 
+                <button
                   onClick={handleQuantityCancel}
                   className={style.quantityCancel}
                 >
@@ -115,21 +111,21 @@ export const ItemInBasket: React.FC<ItemInBasketProps> = ({ item }) => {
           ) : (
             <div className={style.quantityDisplay}>
               <div className={style.quantityControls}>
-                <button 
+                <button
                   onClick={() => handleQuantityChange((item.quantity || 1) - 1)}
                   disabled={(item.quantity || 1) <= 1}
                   className={style.quantityBtn}
                 >
                   −
                 </button>
-                <span 
+                <span
                   onClick={() => setIsEditingQuantity(true)}
                   className={style.quantityValue}
                   title="Нажмите для редактирования"
                 >
                   {item.quantity || 1} шт
                 </span>
-                <button 
+                <button
                   onClick={() => handleQuantityChange((item.quantity || 1) + 1)}
                   disabled={(item.quantity || 1) >= getRest()}
                   className={style.quantityBtn}

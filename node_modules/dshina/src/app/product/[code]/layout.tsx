@@ -1,5 +1,9 @@
 import { Metadata } from "next";
 import { GoodsPriceRest } from "../../../../fsd/entities/markiAvto/api/types";
+import {
+  getPriceWithMarkup,
+  getTotalRest,
+} from "../../../../fsd/shared/utils/priceUtils";
 
 // Функция для получения товара (заглушка, нужно адаптировать под ваш API)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -29,16 +33,8 @@ export async function generateMetadata({
     };
   }
 
-  const price =
-    product.whpr?.wh_price_rest?.[0]?.price_rozn ||
-    product.whpr?.wh_price_rest?.[0]?.price ||
-    0;
-
-  const totalRest =
-    product.whpr?.wh_price_rest?.reduce(
-      (total, item) => total + item.rest,
-      0
-    ) || 0;
+  const price = getPriceWithMarkup(product);
+  const totalRest = getTotalRest(product);
 
   return {
     title: `${product.name} ${product.marka} ${product.model} - Купить по цене ${price.toLocaleString()}₽ | DSHINA.RU`,
@@ -58,16 +54,17 @@ export async function generateMetadata({
       description: `Купить ${product.name} по цене ${price.toLocaleString()}₽. ${totalRest > 0 ? "В наличии" : "Под заказ"}.`,
       url: `https://dmshina.ru/product/${product.code}`,
       siteName: "DSHINA.RU",
-      images: product.img_big_pish
-        ? [
-            {
-              url: product.img_big_pish,
-              width: 800,
-              height: 800,
-              alt: `${product.name} ${product.marka} ${product.model}`,
-            },
-          ]
-        : [],
+      images:
+        product.img_big_my || product.img_big_pish
+          ? [
+              {
+                url: product.img_big_my || product.img_big_pish,
+                width: 800,
+                height: 800,
+                alt: `${product.name} ${product.marka} ${product.model}`,
+              },
+            ]
+          : [],
       locale: "ru_RU",
       type: "article",
     },
@@ -75,7 +72,10 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: `${product.name} - ${product.marka} ${product.model}`,
       description: `Купить ${product.name} по цене ${price.toLocaleString()}₽`,
-      images: product.img_big_pish ? [product.img_big_pish] : [],
+      images:
+        product.img_big_my || product.img_big_pish
+          ? [product.img_big_my || product.img_big_pish]
+          : [],
     },
     robots: {
       index: true,

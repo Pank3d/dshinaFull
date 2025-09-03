@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { GoodsPriceRest } from "../markiAvto/api/types";
 import { BasketState, BasketItem } from "./types";
+import { getTotalRest } from "../../shared/utils/priceUtils";
 
 export const useBasketStore = create<BasketState>()(
   persist(
@@ -11,17 +12,7 @@ export const useBasketStore = create<BasketState>()(
 
       setBasketArray: (item: GoodsPriceRest, quantity: number = 1): boolean => {
         // Получаем текущий остаток товара
-        const getAvailableQuantity = () => {
-          if (item.whpr?.wh_price_rest && item.whpr.wh_price_rest.length > 0) {
-            return item.whpr.wh_price_rest.reduce(
-              (total, stock) => total + stock.rest,
-              0
-            );
-          }
-          return 0;
-        };
-
-        const availableQuantity = getAvailableQuantity();
+        const availableQuantity = getTotalRest(item);
 
         // Проверяем, есть ли товар в корзине
         const state = get();
@@ -119,32 +110,24 @@ export const useBasketStore = create<BasketState>()(
         }
 
         const state = get();
-        const item = state.basketArray.find(basketItem => basketItem.code === code);
-        
+        const item = state.basketArray.find(
+          (basketItem) => basketItem.code === code
+        );
+
         if (!item) {
           return false;
         }
 
         // Получаем доступное количество товара
-        const getAvailableQuantity = () => {
-          if (item.whpr?.wh_price_rest && item.whpr.wh_price_rest.length > 0) {
-            return item.whpr.wh_price_rest.reduce(
-              (total, stock) => total + stock.rest,
-              0
-            );
-          }
-          return 0;
-        };
-
-        const availableQuantity = getAvailableQuantity();
+        const availableQuantity = getTotalRest(item);
 
         if (newQuantity > availableQuantity) {
           return false; // Не можем установить количество больше доступного
         }
 
         set((state) => {
-          const updatedArray = state.basketArray.map(basketItem => 
-            basketItem.code === code 
+          const updatedArray = state.basketArray.map((basketItem) =>
+            basketItem.code === code
               ? { ...basketItem, quantity: newQuantity }
               : basketItem
           );

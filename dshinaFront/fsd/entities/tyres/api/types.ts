@@ -19,6 +19,7 @@ export interface FindTyreFilter {
   podbor_type?: number[];
   thom?: boolean;
   type?: string[];
+  speed_index?: string;
 }
 
 export interface TyreInfo {
@@ -104,4 +105,27 @@ export const DIAMETER_OPTIONS = [
   { label: "R20", value: "20" },
   { label: "R21", value: "21" },
   { label: "R22", value: "22" },
+];
+
+// Опции для шипованности (для зимних шин)
+export const STUDDED_OPTIONS = [
+  { label: "Шипованная", value: "true" },
+  { label: "Нешипованная", value: "false" },
+];
+
+// Индексы скорости
+export const SPEED_INDEX_OPTIONS = [
+  { label: "H (210 км/ч)", value: "H" },
+  { label: "V (240 км/ч)", value: "V" },
+  { label: "W (270 км/ч)", value: "W" },
+  { label: "Y (300 км/ч)", value: "Y" },
+  { label: "Z (свыше 240 км/ч)", value: "Z" },
+  { label: "T (190 км/ч)", value: "T" },
+  { label: "S (180 км/ч)", value: "S" },
+  { label: "R (170 км/ч)", value: "R" },
+  { label: "Q (160 км/ч)", value: "Q" },
+  { label: "P (150 км/ч)", value: "P" },
+  { label: "N (140 км/ч)", value: "N" },
+  { label: "M (130 км/ч)", value: "M" },
+  { label: "L (120 км/ч)", value: "L" },
 ];

@@ -9,6 +9,8 @@ import { useBasketStore } from "../../entities/basket";
 import { LoaderComponent } from "../../shared/ui/Loader/Loader";
 import { ModalComponent } from "../../shared/ui/Modal/ModalComponent";
 import { AddQuantityModal } from "../../shared/ui/AddQuantityModal";
+import { ImageWithoutWatermark } from "../../shared/ui/ImageWithoutWatermark";
+import { getPriceWithMarkup, getTotalRest } from "../../shared/utils/priceUtils";
 
 export const ProductCard = ({ dataItem }: { dataItem: GoodsPriceRest }) => {
   const store = useBasketStore();
@@ -63,45 +65,27 @@ export const ProductCard = ({ dataItem }: { dataItem: GoodsPriceRest }) => {
   };
 
   const getPrice = () => {
-    if (
-      dataItem.whpr?.wh_price_rest &&
-      dataItem.whpr.wh_price_rest.length > 0
-    ) {
-      return (
-        dataItem.whpr.wh_price_rest[0].price_rozn ||
-        dataItem.whpr.wh_price_rest[0].price
-      );
-    }
-    return 0;
+    return getPriceWithMarkup(dataItem);
   };
 
   const getRest = () => {
-    if (
-      dataItem.whpr?.wh_price_rest &&
-      dataItem.whpr.wh_price_rest.length > 0
-    ) {
-      const totalRest = dataItem.whpr.wh_price_rest.reduce(
-        (total, item) => total + item.rest,
-        0
-      );
-      return totalRest;
-    }
-    return 0;
+    return getTotalRest(dataItem);
   };
 
   return (
     <div className={style.productCard}>
       <Link href={`/product/${dataItem.code}`} className={style.productLink}>
         <div className={style.imageContainer}>
-          {dataItem.img_small && (
-            <Image
-              src={dataItem.img_small}
-              alt={dataItem.name}
-              width={120}
-              height={120}
-              className={style.productImage}
-            />
-          )}
+          <ImageWithoutWatermark
+            imgBigMy={dataItem.img_big_my}
+            imgBigPish={dataItem.img_big_pish}
+            imgSmall={dataItem.img_small}
+            alt={dataItem.name}
+            width={120}
+            height={120}
+            className={style.productImage}
+            useSmallImage={true}
+          />
         </div>
 
         <div className={style.productInfo}>

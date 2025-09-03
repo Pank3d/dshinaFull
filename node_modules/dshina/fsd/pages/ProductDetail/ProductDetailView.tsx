@@ -14,6 +14,8 @@ import { GoodsPriceRest } from "../../entities/markiAvto/api/types";
 import { ButtonComponent } from "../../shared/ui/Button";
 import { useBasketStore } from "../../entities/basket";
 import { LoaderComponent } from "../../shared/ui/Loader/Loader";
+import { ImageWithoutWatermark } from "../../shared/ui/ImageWithoutWatermark";
+import { getPriceWithMarkup, getTotalRest } from "../../shared/utils/priceUtils";
 
 interface ProductDetailViewProps {
   product: GoodsPriceRest;
@@ -25,8 +27,8 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
   const [alreadyAdded, setAlreadyAdded] = useState(false);
 
-  // Создаем массив изображений для слайдера
-  const images = [product.img_big_pish].filter(Boolean); // Убираем пустые значения
+  // Создаем массив изображений для слайдера (используем изображения без водяных знаков)
+  const images = [product.img_big_my || product.img_big_pish].filter(Boolean); // Убираем пустые значения
 
   const store = useBasketStore();
   const router = useRouter();
@@ -43,24 +45,11 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
   };
 
   const getPrice = () => {
-    if (product.whpr?.wh_price_rest && product.whpr.wh_price_rest.length > 0) {
-      return (
-        product.whpr.wh_price_rest[0].price_rozn ||
-        product.whpr.wh_price_rest[0].price
-      );
-    }
-    return 0;
+    return getPriceWithMarkup(product);
   };
 
   const getRest = () => {
-    if (product.whpr?.wh_price_rest && product.whpr.wh_price_rest.length > 0) {
-      const totalRest = product.whpr.wh_price_rest.reduce(
-        (total, item) => total + item.rest,
-        0
-      );
-      return totalRest;
-    }
-    return 0;
+    return getTotalRest(product);
   };
 
   // Структурированные данные для товара
@@ -77,7 +66,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
     },
     model: product.model,
     category: "Автомобильные шины",
-    image: product.img_big_pish || "",
+    image: product.img_big_my || product.img_big_pish || "",
     offers: {
       "@type": "Offer",
       url: `https://dmshina.ru/product/${product.code}`,
@@ -156,12 +145,15 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                   {images.map((image, index) => (
                     <SwiperSlide key={index}>
                       <div className={style.mainImage}>
-                        <Image
-                          src={image}
+                        <ImageWithoutWatermark
+                          imgBigMy={product.img_big_my}
+                          imgBigPish={product.img_big_pish}
+                          imgSmall={product.img_small}
                           alt={`${product.name} - изображение ${index + 1}`}
                           width={400}
                           height={400}
                           className={style.productImage}
+                          useSmallImage={false}
                         />
                       </div>
                     </SwiperSlide>
@@ -182,11 +174,14 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                     {images.map((image, index) => (
                       <SwiperSlide key={index}>
                         <div className={style.thumbnail}>
-                          <Image
-                            src={image}
+                          <ImageWithoutWatermark
+                            imgBigMy={product.img_big_my}
+                            imgBigPish={product.img_big_pish}
+                            imgSmall={product.img_small}
                             alt={`Миниатюра ${index + 1}`}
                             width={80}
                             height={80}
+                            useSmallImage={false}
                           />
                         </div>
                       </SwiperSlide>

@@ -9,6 +9,7 @@ import { ItemInBasket } from "./ItemInBasket/ItemInBasket";
 import { useSendOrderToTelegram } from "../../markiAvto/api/query";
 import { OrderForm } from "./OrderForm/OrderForm";
 import { SuccessModal } from "../../../shared/ui/SuccessModal/SuccessModal";
+import { getPriceWithMarkup } from "../../../shared/utils/priceUtils";
 
 export const BasketComponent = () => {
   const [opened, setOpened] = useState(false);
@@ -32,14 +33,9 @@ export const BasketComponent = () => {
 
   const getTotalPrice = () => {
     return store.basketArray.reduce((total, item) => {
-      if (item.whpr?.wh_price_rest && item.whpr.wh_price_rest.length > 0) {
-        const price =
-          item.whpr.wh_price_rest[0].price_rozn ||
-          item.whpr.wh_price_rest[0].price;
-        const quantity = item.quantity || 1;
-        return total + price * quantity;
-      }
-      return total;
+      const price = getPriceWithMarkup(item);
+      const quantity = item.quantity || 1;
+      return total + price * quantity;
     }, 0);
   };
 
@@ -78,10 +74,7 @@ export const BasketComponent = () => {
       items: store.basketArray.map((item) => ({
         name: item.name,
         code: item.code,
-        price:
-          item.whpr?.wh_price_rest?.[0]?.price_rozn ||
-          item.whpr?.wh_price_rest?.[0]?.price ||
-          0,
+        price: getPriceWithMarkup(item),
         quantity: item.quantity || 1,
         marka: item.marka,
         model: item.model,

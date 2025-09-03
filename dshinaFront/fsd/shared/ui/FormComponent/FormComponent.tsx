@@ -3,19 +3,27 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ReactNode } from "react";
 import SelectComponent from "../Select/Select";
+import { PriceRangeField } from "../PriceRangeField";
 import style from "./FormComponent.module.scss";
 
 export interface FieldConfig {
   name: string;
   label: string;
-  type: "select" | "text" | "number";
+  type: "select" | "text" | "number" | "priceRange";
   placeholder?: string;
+  placeholderMin?: string;
+  placeholderMax?: string;
   data?: Array<{ label: string; value: string | number }>;
   onChangeFromParent?: (value: any) => void;
+  onPriceMinChange?: (value: string) => void;
+  onPriceMaxChange?: (value: string) => void;
+  priceMin?: string;
+  priceMax?: string;
   onChange?: (value: any) => void;
   onReset?: () => void;
   searchable?: boolean;
   disabled?: boolean;
+  visible?: boolean;
   validation?: Yup.StringSchema | Yup.NumberSchema;
 }
 
@@ -74,21 +82,24 @@ export const FormComponent: React.FC<FormComponentProps> = ({
         return (
           <Field name={field.name}>
             {({ field: formikField, form }: any) => (
-              <input
-                {...formikField}
-                type="text"
-                placeholder={field.placeholder}
-                className={style.textInput}
-                onChange={(e) => {
-                  form.setFieldValue(field.name, e.target.value);
-                  if (field.onChangeFromParent) {
-                    field.onChangeFromParent(e.target.value);
-                  }
-                  if (field.onChange) {
-                    field.onChange(e.target.value);
-                  }
-                }}
-              />
+              <div className={style.inputFieldWrapper}>
+                {field.label && <label className={style.inputLabel}>{field.label}</label>}
+                <input
+                  {...formikField}
+                  type="text"
+                  placeholder={field.placeholder}
+                  className={style.textInput}
+                  onChange={(e) => {
+                    form.setFieldValue(field.name, e.target.value);
+                    if (field.onChangeFromParent) {
+                      field.onChangeFromParent(e.target.value);
+                    }
+                    if (field.onChange) {
+                      field.onChange(e.target.value);
+                    }
+                  }}
+                />
+              </div>
             )}
           </Field>
         );
@@ -96,23 +107,38 @@ export const FormComponent: React.FC<FormComponentProps> = ({
         return (
           <Field name={field.name}>
             {({ field: formikField, form }: any) => (
-              <input
-                {...formikField}
-                type="number"
-                placeholder={field.placeholder}
-                className={style.numberInput}
-                onChange={(e) => {
-                  form.setFieldValue(field.name, e.target.value);
-                  if (field.onChangeFromParent) {
-                    field.onChangeFromParent(e.target.value);
-                  }
-                  if (field.onChange) {
-                    field.onChange(e.target.value);
-                  }
-                }}
-              />
+              <div className={style.inputFieldWrapper}>
+                {field.label && <label className={style.inputLabel}>{field.label}</label>}
+                <input
+                  {...formikField}
+                  type="number"
+                  placeholder={field.placeholder}
+                  className={style.numberInput}
+                  onChange={(e) => {
+                    form.setFieldValue(field.name, e.target.value);
+                    if (field.onChangeFromParent) {
+                      field.onChangeFromParent(e.target.value);
+                    }
+                    if (field.onChange) {
+                      field.onChange(e.target.value);
+                    }
+                  }}
+                />
+              </div>
             )}
           </Field>
+        );
+      case "priceRange":
+        return (
+          <PriceRangeField
+            label={field.label}
+            priceMin={field.priceMin || ""}
+            priceMax={field.priceMax || ""}
+            onPriceMinChange={field.onPriceMinChange || (() => {})}
+            onPriceMaxChange={field.onPriceMaxChange || (() => {})}
+            placeholderMin={field.placeholderMin}
+            placeholderMax={field.placeholderMax}
+          />
         );
       default:
         return null;
@@ -135,11 +161,18 @@ export const FormComponent: React.FC<FormComponentProps> = ({
           return (
             <Form>
               <div className={style.fieldsGrid}>
-                {fields.map((field) => (
-                  <div key={field.name} className={style.fieldWrapper}>
-                    {renderField(field)}
-                  </div>
-                ))}
+                {fields.map((field) => {
+                  // Показываем поле только если visible не задано или равно true
+                  if (field.visible === false) {
+                    return null;
+                  }
+                  
+                  return (
+                    <div key={field.name} className={style.fieldWrapper}>
+                      {renderField(field)}
+                    </div>
+                  );
+                })}
               </div>
               {children && typeof children === "function"
                 ? children({ resetForm })
