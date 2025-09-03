@@ -22,9 +22,10 @@ async function getProduct(_code: string): Promise<GoodsPriceRest | null> {
 export async function generateMetadata({
   params,
 }: {
-  params: { code: string };
+  params: Promise<{ code: string }>;
 }): Promise<Metadata> {
-  const product = await getProduct(params.code);
+  const { code } = await params;
+  const product = await getProduct(code);
 
   if (!product) {
     return {
