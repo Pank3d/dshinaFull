@@ -9,6 +9,7 @@ export type BasketState = {
   loadingItems: Set<string>;
   isItemInBasket: (code: string) => boolean;
   setBasketArray: (item: GoodsPriceRest, quantity?: number) => boolean;
+  updateQuantity: (code: string, newQuantity: number) => boolean;
   deleteBasketArray: (code: string) => Promise<void>;
   isItemLoading: (code: string) => boolean;
   clearBasket: () => void;

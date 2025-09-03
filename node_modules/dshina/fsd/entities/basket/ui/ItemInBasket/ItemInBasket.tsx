@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import style from "./ItemInBasket.module.scss";
 import { BasketItem } from "../../types";
@@ -12,8 +12,10 @@ interface ItemInBasketProps {
 }
 
 export const ItemInBasket: React.FC<ItemInBasketProps> = ({ item }) => {
-  const { deleteBasketArray, isItemLoading } = useBasketStore();
+  const { deleteBasketArray, isItemLoading, updateQuantity } = useBasketStore();
   const isDeleting = isItemLoading(item.code);
+  const [isEditingQuantity, setIsEditingQuantity] = useState(false);
+  const [tempQuantity, setTempQuantity] = useState(item.quantity || 1);
 
   const deleteBasketArrayMethod = async () => {
     await deleteBasketArray(item.code);
@@ -31,9 +33,37 @@ export const ItemInBasket: React.FC<ItemInBasketProps> = ({ item }) => {
 
   const getRest = () => {
     if (item.whpr?.wh_price_rest && item.whpr.wh_price_rest.length > 0) {
-      return item.whpr.wh_price_rest[0].rest;
+      return item.whpr.wh_price_rest.reduce((total, stock) => total + stock.rest, 0);
     }
     return 0;
+  };
+
+  const handleQuantityChange = (newQuantity: number) => {
+    if (newQuantity <= 0 || newQuantity > getRest()) return;
+    
+    const success = updateQuantity(item.code, newQuantity);
+    if (success) {
+      setTempQuantity(newQuantity);
+    }
+  };
+
+  const handleQuantityInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value) || 1;
+    setTempQuantity(value);
+  };
+
+  const handleQuantitySubmit = () => {
+    if (tempQuantity <= 0 || tempQuantity > getRest()) {
+      setTempQuantity(item.quantity || 1);
+    } else {
+      updateQuantity(item.code, tempQuantity);
+    }
+    setIsEditingQuantity(false);
+  };
+
+  const handleQuantityCancel = () => {
+    setTempQuantity(item.quantity || 1);
+    setIsEditingQuantity(false);
   };
 
   return (
@@ -56,9 +86,60 @@ export const ItemInBasket: React.FC<ItemInBasketProps> = ({ item }) => {
           {item.marka} {item.model}
         </p>
         <p className={style.itemCode}>{item.code}</p>
-        <p className={style.itemQuantity}>
-          Количество: {item.quantity || 1} шт
-        </p>
+        <div className={style.quantitySection}>
+          {isEditingQuantity ? (
+            <div className={style.quantityEdit}>
+              <input
+                type="number"
+                value={tempQuantity}
+                onChange={handleQuantityInputChange}
+                min={1}
+                max={getRest()}
+                className={style.quantityInput}
+              />
+              <div className={style.quantityButtons}>
+                <button 
+                  onClick={handleQuantitySubmit}
+                  className={style.quantityConfirm}
+                >
+                  ✓
+                </button>
+                <button 
+                  onClick={handleQuantityCancel}
+                  className={style.quantityCancel}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className={style.quantityDisplay}>
+              <div className={style.quantityControls}>
+                <button 
+                  onClick={() => handleQuantityChange((item.quantity || 1) - 1)}
+                  disabled={(item.quantity || 1) <= 1}
+                  className={style.quantityBtn}
+                >
+                  −
+                </button>
+                <span 
+                  onClick={() => setIsEditingQuantity(true)}
+                  className={style.quantityValue}
+                  title="Нажмите для редактирования"
+                >
+                  {item.quantity || 1} шт
+                </span>
+                <button 
+                  onClick={() => handleQuantityChange((item.quantity || 1) + 1)}
+                  disabled={(item.quantity || 1) >= getRest()}
+                  className={style.quantityBtn}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
         <p className={style.itemRest}>{getRest()} шт в наличии</p>
       </div>
 

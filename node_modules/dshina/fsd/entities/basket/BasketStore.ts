@@ -113,6 +113,51 @@ export const useBasketStore = create<BasketState>()(
         });
       },
 
+      updateQuantity: (code: string, newQuantity: number): boolean => {
+        if (newQuantity <= 0) {
+          return false;
+        }
+
+        const state = get();
+        const item = state.basketArray.find(basketItem => basketItem.code === code);
+        
+        if (!item) {
+          return false;
+        }
+
+        // Получаем доступное количество товара
+        const getAvailableQuantity = () => {
+          if (item.whpr?.wh_price_rest && item.whpr.wh_price_rest.length > 0) {
+            return item.whpr.wh_price_rest.reduce(
+              (total, stock) => total + stock.rest,
+              0
+            );
+          }
+          return 0;
+        };
+
+        const availableQuantity = getAvailableQuantity();
+
+        if (newQuantity > availableQuantity) {
+          return false; // Не можем установить количество больше доступного
+        }
+
+        set((state) => {
+          const updatedArray = state.basketArray.map(basketItem => 
+            basketItem.code === code 
+              ? { ...basketItem, quantity: newQuantity }
+              : basketItem
+          );
+
+          return {
+            ...state,
+            basketArray: updatedArray,
+          };
+        });
+
+        return true;
+      },
+
       clearBasket: () => {
         set(() => ({
           basketArray: [],

@@ -78,6 +78,11 @@ export const getWarehousesByAddress = async (address_id: string) => {
   return response.data;
 };
 
+export const getProductByCode = async (code: string) => {
+  const response = await axios.get(`${baseUrl}/product/${code}`);
+  return response.data;
+};
+
 export const sendOrderToTelegram = async (orderData: {
   customerName: string;
   email: string;
