@@ -56,9 +56,15 @@ jobs:
           if [ -d "dshina" ]; then
             cd dshina
             docker-compose down 2>/dev/null || true
-            docker system prune -f
             cd ..
           fi
+          
+          # Полная очистка Docker кеша
+          echo "🧹 Cleaning Docker cache..."
+          docker system prune -a -f
+          docker volume prune -f
+          docker image prune -a -f
+          docker container prune -f
           
           # Удаление старой версии и клонирование новой
           rm -rf dshina
