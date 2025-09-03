@@ -25,7 +25,7 @@ export const DualRangeSlider: React.FC<DualRangeSliderProps> = ({
   onMaxChange,
   formatValue = (value) => value.toString(),
 }) => {
-  const [isDragging, setIsDragging] = useState<'min' | 'max' | null>(null);
+  const [isDragging, setIsDragging] = useState<"min" | "max" | null>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
 
   const getPercent = useCallback(
@@ -41,10 +41,11 @@ export const DualRangeSlider: React.FC<DualRangeSliderProps> = ({
     [min, max, step]
   );
 
-  const handleMouseDown = (type: 'min' | 'max') => (event: React.MouseEvent) => {
-    event.preventDefault();
-    setIsDragging(type);
-  };
+  const handleMouseDown =
+    (type: "min" | "max") => (event: React.MouseEvent) => {
+      event.preventDefault();
+      setIsDragging(type);
+    };
 
   const handleMouseMove = useCallback(
     (event: MouseEvent) => {
@@ -57,19 +58,29 @@ export const DualRangeSlider: React.FC<DualRangeSliderProps> = ({
       );
       const newValue = getValue(percent);
 
-      if (isDragging === 'min') {
+      if (isDragging === "min") {
         const clampedValue = Math.min(newValue, maxValue - step);
         if (clampedValue >= min && clampedValue !== minValue) {
           onMinChange(clampedValue);
         }
-      } else if (isDragging === 'max') {
+      } else if (isDragging === "max") {
         const clampedValue = Math.max(newValue, minValue + step);
         if (clampedValue <= max && clampedValue !== maxValue) {
           onMaxChange(clampedValue);
         }
       }
     },
-    [isDragging, getValue, minValue, maxValue, step, min, max, onMinChange, onMaxChange]
+    [
+      isDragging,
+      getValue,
+      minValue,
+      maxValue,
+      step,
+      min,
+      max,
+      onMinChange,
+      onMaxChange,
+    ]
   );
 
   const handleMouseUp = useCallback(() => {
@@ -78,11 +89,11 @@ export const DualRangeSlider: React.FC<DualRangeSliderProps> = ({
 
   useEffect(() => {
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
       return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
       };
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
@@ -93,7 +104,7 @@ export const DualRangeSlider: React.FC<DualRangeSliderProps> = ({
   return (
     <div className={style.sliderContainer}>
       {label && <label className={style.label}>{label}</label>}
-      
+
       <div className={style.valuesDisplay}>
         <span className={style.value}>От: {formatValue(minValue)}</span>
         <span className={style.value}>До: {formatValue(maxValue)}</span>
@@ -112,18 +123,18 @@ export const DualRangeSlider: React.FC<DualRangeSliderProps> = ({
 
         <div
           className={`${style.sliderThumb} ${style.sliderThumbMin} ${
-            isDragging === 'min' ? style.dragging : ''
+            isDragging === "min" ? style.dragging : ""
           }`}
           style={{ left: `${minPercent}%` }}
-          onMouseDown={handleMouseDown('min')}
+          onMouseDown={handleMouseDown("min")}
         />
 
         <div
           className={`${style.sliderThumb} ${style.sliderThumbMax} ${
-            isDragging === 'max' ? style.dragging : ''
+            isDragging === "max" ? style.dragging : ""
           }`}
           style={{ left: `${maxPercent}%` }}
-          onMouseDown={handleMouseDown('max')}
+          onMouseDown={handleMouseDown("max")}
         />
       </div>
 

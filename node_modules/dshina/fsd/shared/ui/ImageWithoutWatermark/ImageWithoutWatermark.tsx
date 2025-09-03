@@ -70,8 +70,8 @@ export const ImageWithoutWatermark: React.FC<ImageWithoutWatermarkProps> = ({
       quality={95}
       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
       style={{
-        objectFit: 'cover',
-        objectPosition: 'center',
+        objectFit: "cover",
+        objectPosition: "center",
       }}
     />
   );

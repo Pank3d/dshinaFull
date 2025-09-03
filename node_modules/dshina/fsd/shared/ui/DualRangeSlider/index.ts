@@ -1,1 +1,1 @@
-export { DualRangeSlider } from './DualRangeSlider';
+export { DualRangeSlider } from "./DualRangeSlider";

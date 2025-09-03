@@ -41,7 +41,9 @@
   line-height: 20px;
   min-height: 36px;
   background-color: #fff;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition:
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
 
   &:focus {
     outline: none;
@@ -60,7 +62,6 @@
     color: #adb5bd;
   }
 }
-
 
 .inputFieldWrapper {
   display: flex;
