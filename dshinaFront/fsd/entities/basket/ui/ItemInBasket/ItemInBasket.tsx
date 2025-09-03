@@ -7,7 +7,10 @@ import { BasketItem } from "../../types";
 import { useBasketStore } from "../../BasketStore";
 import { LoaderComponent } from "../../../../shared/ui/Loader/Loader";
 import { ImageWithoutWatermark } from "../../../../shared/ui/ImageWithoutWatermark";
-import { getPriceWithMarkup, getTotalRest } from "../../../../shared/utils/priceUtils";
+import {
+  getPriceWithMarkup,
+  getTotalRest,
+} from "../../../../shared/utils/priceUtils";
 
 interface ItemInBasketProps {
   item: BasketItem;

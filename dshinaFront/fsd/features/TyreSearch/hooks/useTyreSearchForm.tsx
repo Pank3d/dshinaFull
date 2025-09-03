@@ -79,7 +79,16 @@ export const useTyreSearchForm = () => {
     if (priceMax) newFilter.price_max = parseInt(priceMax);
 
     setFilter(newFilter);
-  }, [width, height, diameter, season, studded, speedIndex, priceMin, priceMax]);
+  }, [
+    width,
+    height,
+    diameter,
+    season,
+    studded,
+    speedIndex,
+    priceMin,
+    priceMax,
+  ]);
 
   // Обновление URL при изменении параметров (только после инициализации)
   useEffect(() => {
@@ -118,7 +127,18 @@ export const useTyreSearchForm = () => {
     if (isInitialized && page > 0) {
       setPage(0);
     }
-  }, [width, height, diameter, season, studded, speedIndex, priceMin, priceMax, minQuantity, isInitialized]);
+  }, [
+    width,
+    height,
+    diameter,
+    season,
+    studded,
+    speedIndex,
+    priceMin,
+    priceMax,
+    minQuantity,
+    isInitialized,
+  ]);
 
   const handleWidthChange = (value: string) => {
     setWidth(value);
@@ -156,6 +176,14 @@ export const useTyreSearchForm = () => {
     setPriceMax(value);
   };
 
+  const handleSliderMinChange = (value: number) => {
+    setPriceMin(value > 0 ? value.toString() : "");
+  };
+
+  const handleSliderMaxChange = (value: number) => {
+    setPriceMax(value.toString());
+  };
+
   const handleMinQuantityChange = (value: string) => {
     setMinQuantity(value);
   };
@@ -168,11 +196,10 @@ export const useTyreSearchForm = () => {
     error: errorTyres,
   } = useFindTyre(filter, page, pageSize, shouldSearch);
 
-
   // Фильтрация по минимальному количеству на фронтенде
   const filteredTyresData = useMemo(() => {
     const rawData = tyresData?.price_rest_list?.TyrePriceRest;
-    
+
     if (!rawData || !Array.isArray(rawData)) {
       return rawData;
     }
@@ -257,22 +284,25 @@ export const useTyreSearchForm = () => {
       searchable: true,
     },
     {
-      name: "priceRange",
-      label: "Диапазон цены",
-      type: "priceRange",
-      placeholderMin: "Цена от",
-      placeholderMax: "Цена до",
-      priceMin: priceMin,
-      priceMax: priceMax,
-      onPriceMinChange: handlePriceMinChange,
-      onPriceMaxChange: handlePriceMaxChange,
-    },
-    {
       name: "minQuantity",
       label: "Мин. количество в наличии",
       type: "number",
       placeholder: "Укажите минимальное количество",
       onChangeFromParent: handleMinQuantityChange,
+    },
+    {
+      name: "priceRange",
+      label: "Диапазон цены",
+      type: "rangeSlider",
+      min: 0,
+      max: 50000,
+      minValue: priceMin ? parseInt(priceMin) : 0,
+      maxValue: priceMax ? parseInt(priceMax) : 50000,
+      step: 100,
+      onMinChange: handleSliderMinChange,
+      onMaxChange: handleSliderMaxChange,
+      formatValue: (value: number) =>
+        value === 0 ? "Любая" : `${value.toLocaleString()} ₽`,
     },
   ];
 
@@ -296,7 +326,17 @@ export const useTyreSearchForm = () => {
 
   return {
     // Состояния
-    formValues: { width, height, diameter, season, studded, speedIndex, priceMin, priceMax, minQuantity },
+    formValues: {
+      width,
+      height,
+      diameter,
+      season,
+      studded,
+      speedIndex,
+      priceMin,
+      priceMax,
+      minQuantity,
+    },
     // Конфигурация
     fieldsConfig,
     // Методы сброса

@@ -19,7 +19,9 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   background: #fff;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 
   &:focus-within {
     border-color: #007bff;

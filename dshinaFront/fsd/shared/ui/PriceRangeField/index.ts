@@ -1,1 +1,1 @@
-export { PriceRangeField } from './PriceRangeField';
+export { PriceRangeField } from "./PriceRangeField";

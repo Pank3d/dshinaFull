@@ -15,7 +15,10 @@ import { ButtonComponent } from "../../shared/ui/Button";
 import { useBasketStore } from "../../entities/basket";
 import { LoaderComponent } from "../../shared/ui/Loader/Loader";
 import { ImageWithoutWatermark } from "../../shared/ui/ImageWithoutWatermark";
-import { getPriceWithMarkup, getTotalRest } from "../../shared/utils/priceUtils";
+import {
+  getPriceWithMarkup,
+  getTotalRest,
+} from "../../shared/utils/priceUtils";
 
 interface ProductDetailViewProps {
   product: GoodsPriceRest;

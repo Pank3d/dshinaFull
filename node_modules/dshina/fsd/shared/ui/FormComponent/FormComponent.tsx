@@ -4,12 +4,13 @@ import * as Yup from "yup";
 import { ReactNode } from "react";
 import SelectComponent from "../Select/Select";
 import { PriceRangeField } from "../PriceRangeField";
+import { DualRangeSlider } from "../DualRangeSlider";
 import style from "./FormComponent.module.scss";
 
 export interface FieldConfig {
   name: string;
   label: string;
-  type: "select" | "text" | "number" | "priceRange";
+  type: "select" | "text" | "number" | "priceRange" | "rangeSlider";
   placeholder?: string;
   placeholderMin?: string;
   placeholderMax?: string;
@@ -17,8 +18,16 @@ export interface FieldConfig {
   onChangeFromParent?: (value: any) => void;
   onPriceMinChange?: (value: string) => void;
   onPriceMaxChange?: (value: string) => void;
+  onMinChange?: (value: number) => void;
+  onMaxChange?: (value: number) => void;
   priceMin?: string;
   priceMax?: string;
+  min?: number;
+  max?: number;
+  minValue?: number;
+  maxValue?: number;
+  step?: number;
+  formatValue?: (value: number) => string;
   onChange?: (value: any) => void;
   onReset?: () => void;
   searchable?: boolean;
@@ -83,7 +92,9 @@ export const FormComponent: React.FC<FormComponentProps> = ({
           <Field name={field.name}>
             {({ field: formikField, form }: any) => (
               <div className={style.inputFieldWrapper}>
-                {field.label && <label className={style.inputLabel}>{field.label}</label>}
+                {field.label && (
+                  <label className={style.inputLabel}>{field.label}</label>
+                )}
                 <input
                   {...formikField}
                   type="text"
@@ -108,7 +119,9 @@ export const FormComponent: React.FC<FormComponentProps> = ({
           <Field name={field.name}>
             {({ field: formikField, form }: any) => (
               <div className={style.inputFieldWrapper}>
-                {field.label && <label className={style.inputLabel}>{field.label}</label>}
+                {field.label && (
+                  <label className={style.inputLabel}>{field.label}</label>
+                )}
                 <input
                   {...formikField}
                   type="number"
@@ -140,6 +153,20 @@ export const FormComponent: React.FC<FormComponentProps> = ({
             placeholderMax={field.placeholderMax}
           />
         );
+      case "rangeSlider":
+        return (
+          <DualRangeSlider
+            min={field.min || 0}
+            max={field.max || 100}
+            minValue={field.minValue || field.min || 0}
+            maxValue={field.maxValue || field.max || 100}
+            step={field.step || 1}
+            label={field.label}
+            onMinChange={field.onMinChange || (() => {})}
+            onMaxChange={field.onMaxChange || (() => {})}
+            formatValue={field.formatValue}
+          />
+        );
       default:
         return null;
     }
@@ -166,7 +193,7 @@ export const FormComponent: React.FC<FormComponentProps> = ({
                   if (field.visible === false) {
                     return null;
                   }
-                  
+
                   return (
                     <div key={field.name} className={style.fieldWrapper}>
                       {renderField(field)}

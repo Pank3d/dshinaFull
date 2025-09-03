@@ -1,1 +1,1 @@
-export { ImageWithoutWatermark } from './ImageWithoutWatermark';
+export { ImageWithoutWatermark } from "./ImageWithoutWatermark";

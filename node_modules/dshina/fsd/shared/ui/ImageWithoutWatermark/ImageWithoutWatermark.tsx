@@ -31,27 +31,27 @@ export const ImageWithoutWatermark: React.FC<ImageWithoutWatermarkProps> = ({
     if (useSmallImage && imgSmall) {
       return imgSmall;
     }
-    
+
     // Приоритет: img_big_my (без водяных знаков) -> img_big_pish (с водяными знаками)
-    return imgBigMy || imgBigPish || imgSmall || "";
+    return imgSmall || imgBigPish || imgBigMy || "";
   };
 
   const imageSrc = getImageSrc();
 
   if (!imageSrc) {
     return (
-      <div 
+      <div
         className={className}
-        style={{ 
-          width, 
-          height, 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          backgroundColor: '#f8f9fa',
-          border: '1px solid #dee2e6',
-          borderRadius: '4px',
-          color: '#6c757d'
+        style={{
+          width,
+          height,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#f8f9fa",
+          border: "1px solid #dee2e6",
+          borderRadius: "4px",
+          color: "#6c757d",
         }}
       >
         <span>Нет изображения</span>
@@ -67,6 +67,12 @@ export const ImageWithoutWatermark: React.FC<ImageWithoutWatermarkProps> = ({
       height={height}
       className={className}
       priority={priority}
+      quality={95}
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      style={{
+        objectFit: 'cover',
+        objectPosition: 'center',
+      }}
     />
   );
 };

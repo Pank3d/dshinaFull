@@ -7,12 +7,15 @@ export const MARKUP_PERCENTAGE = 9;
  * @param markupPercent - процент наценки (по умолчанию 9%)
  * @returns цена с наценкой, округленная до целых
  */
-export const applyMarkup = (price: number, markupPercent: number = MARKUP_PERCENTAGE): number => {
+export const applyMarkup = (
+  price: number,
+  markupPercent: number = MARKUP_PERCENTAGE
+): number => {
   if (!price || price <= 0) return 0;
-  
+
   const markup = price * (markupPercent / 100);
   const finalPrice = price + markup;
-  
+
   // Округляем до целых
   return Math.round(finalPrice);
 };
@@ -26,8 +29,11 @@ export const getPriceWithMarkup = (item: any): number => {
   if (!item?.whpr?.wh_price_rest || item.whpr.wh_price_rest.length === 0) {
     return 0;
   }
-  
-  const basePrice = item.whpr.wh_price_rest[0].price_rozn || item.whpr.wh_price_rest[0].price || 0;
+
+  const basePrice =
+    item.whpr.wh_price_rest[0].price_rozn ||
+    item.whpr.wh_price_rest[0].price ||
+    0;
   return applyMarkup(basePrice);
 };
 
@@ -40,6 +46,9 @@ export const getTotalRest = (item: any): number => {
   if (!item?.whpr?.wh_price_rest || item.whpr.wh_price_rest.length === 0) {
     return 0;
   }
-  
-  return item.whpr.wh_price_rest.reduce((total: number, stock: any) => total + stock.rest, 0);
+
+  return item.whpr.wh_price_rest.reduce(
+    (total: number, stock: any) => total + stock.rest,
+    0
+  );
 };

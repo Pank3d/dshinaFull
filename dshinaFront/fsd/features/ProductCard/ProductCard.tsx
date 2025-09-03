@@ -10,7 +10,10 @@ import { LoaderComponent } from "../../shared/ui/Loader/Loader";
 import { ModalComponent } from "../../shared/ui/Modal/ModalComponent";
 import { AddQuantityModal } from "../../shared/ui/AddQuantityModal";
 import { ImageWithoutWatermark } from "../../shared/ui/ImageWithoutWatermark";
-import { getPriceWithMarkup, getTotalRest } from "../../shared/utils/priceUtils";
+import {
+  getPriceWithMarkup,
+  getTotalRest,
+} from "../../shared/utils/priceUtils";
 
 export const ProductCard = ({ dataItem }: { dataItem: GoodsPriceRest }) => {
   const store = useBasketStore();
