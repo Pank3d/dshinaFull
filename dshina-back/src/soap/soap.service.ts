@@ -219,7 +219,7 @@ export class SoapService {
           break;
         }
 
-        // ФИЛЬТРАЦИЯ НА СТОРОНЕ БЭКЕНДА по высоте, диаметру, индексу скорости и минимальному количеству
+        // ФИЛЬТРАЦИЯ НА СТОРОНЕ БЭКЕНДА по высоте, диаметру, сезону, индексу скорости и минимальному количеству
         // API корректно фильтрует по ширине, поэтому фильтруем только оставшиеся параметры
         const filtered = priceRestList.filter((tyre: any) => {
           const name = tyre.name || '';
@@ -237,6 +237,24 @@ export class SoapService {
           if (filter.height_max !== undefined && height > filter.height_max) return false;
           if (filter.diameter_min !== undefined && diameter < filter.diameter_min) return false;
           if (filter.diameter_max !== undefined && diameter > filter.diameter_max) return false;
+
+          // Фильтруем по сезону (если указан)
+          if (filter.season_list && filter.season_list.length > 0) {
+            const season = tyre.season; // 's' - summer, 'w' - winter, 'a' - all-season
+            const requestedSeason = filter.season_list[0];
+
+            // Маппинг сезонов: фронт отправляет 'summer'/'winter'/'all-season', API возвращает 's'/'w'/'a'
+            const seasonMap: { [key: string]: string } = {
+              'summer': 's',
+              'winter': 'w',
+              'all-season': 'a',
+            };
+
+            const expectedSeasonCode = seasonMap[requestedSeason];
+            if (expectedSeasonCode && season !== expectedSeasonCode) {
+              return false;
+            }
+          }
 
           // Фильтруем по индексу скорости (если указан)
           if (filter.speed_index) {
