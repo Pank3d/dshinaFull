@@ -37,8 +37,10 @@ export interface TyreInfo {
 }
 
 export interface ResultFindTyre {
-  currencyRate?: string;
-  price_rest_list?: TyreInfo[];
+  currencyRate?: any;
+  price_rest_list?: {
+    TyrePriceRest?: any[];
+  } | any[];
   totalPages?: number;
   warehouseLogistics?: any;
   error?: string;

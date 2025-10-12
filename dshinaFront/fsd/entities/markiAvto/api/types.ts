@@ -25,6 +25,7 @@ export interface GoodsPriceRest {
   name: string;
   thorn: boolean;
   type: string;
+  season?: string;
   whpr: {
     wh_price_rest: WarehousePriceRest[];
   };

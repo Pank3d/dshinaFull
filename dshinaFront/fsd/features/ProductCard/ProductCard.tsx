@@ -13,6 +13,7 @@ import { ImageWithoutWatermark } from "../../shared/ui/ImageWithoutWatermark";
 import {
   getPriceWithMarkup,
   getTotalRest,
+  getSeasonDisplayName,
 } from "../../shared/utils/priceUtils";
 
 export const ProductCard = ({ dataItem }: { dataItem: GoodsPriceRest }) => {
@@ -96,6 +97,11 @@ export const ProductCard = ({ dataItem }: { dataItem: GoodsPriceRest }) => {
           <p className={style.productDetails}>
             {dataItem.marka} {dataItem.model}
           </p>
+          {dataItem.season && (
+            <p className={style.productSeason}>
+              {getSeasonDisplayName(dataItem.season)}
+            </p>
+          )}
           <p className={style.productCode}>Код: {dataItem.code}</p>
           <p className={style.productRest}>{getRest()} шт в наличии</p>
         </div>

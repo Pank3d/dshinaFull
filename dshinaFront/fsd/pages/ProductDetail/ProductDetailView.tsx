@@ -18,6 +18,7 @@ import { ImageWithoutWatermark } from "../../shared/ui/ImageWithoutWatermark";
 import {
   getPriceWithMarkup,
   getTotalRest,
+  getSeasonDisplayName,
 } from "../../shared/utils/priceUtils";
 
 interface ProductDetailViewProps {
@@ -113,6 +114,11 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
         name: "Шипованная",
         value: product.thorn ? "Да" : "Нет",
       },
+      ...(product.season ? [{
+        "@type": "PropertyValue",
+        name: "Сезонность",
+        value: getSeasonDisplayName(product.season),
+      }] : []),
     ],
   };
 
@@ -228,6 +234,14 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                   <span className={style.specLabel}>Тип:</span>
                   <span className={style.specValue}>{product.type}</span>
                 </div>
+                {product.season && (
+                  <div className={style.specItem}>
+                    <span className={style.specLabel}>Сезонность:</span>
+                    <span className={style.specValue}>
+                      {getSeasonDisplayName(product.season)}
+                    </span>
+                  </div>
+                )}
                 <div className={style.specItem}>
                   <span className={style.specLabel}>Цвет:</span>
                   <span className={style.specValue}>{product.color}</span>

@@ -181,7 +181,7 @@ export class SoapService {
         year_end,
       },
     });
-    
+
     return response?.GetGoodsByCarResult ?? [];
   }
 
@@ -195,24 +195,56 @@ export class SoapService {
     }
 
     const client = await this.createSoapClient();
-    
+
     try {
-      const [response] = await client.GetFindTyreAsync({
+      const requestParams = {
         login: this.LOGIN,
         password: this.PASSWORD,
         filter: filter,
         page: page,
         pageSize: pageSize,
-      });
+      };
+
+      const [response] = await client.GetFindTyreAsync(requestParams);
+
+      let priceRestList = response?.GetFindTyreResult?.price_rest_list?.TyrePriceRest || [];
+
+      // ФИЛЬТРАЦИЯ НА СТОРОНЕ БЭКЕНДА по высоте и диаметру (т.к. API их игнорирует)
+      // API корректно фильтрует по ширине, поэтому фильтруем только оставшиеся параметры
+      if (Array.isArray(priceRestList) && priceRestList.length > 0) {
+        priceRestList = priceRestList.filter((tyre: any) => {
+          const name = tyre.name || '';
+          // Парсим размер из строки типа "195/65R15" или "255/40ZR19"
+          const sizeMatch = name.match(/(\d+)\/(\d+)[A-Z]*R(\d+)/);
+
+          if (!sizeMatch) {
+            return false;
+          }
+
+          const [, , height, diameter] = sizeMatch.map(Number);
+
+          // Фильтруем только по высоте и диаметру (ширину API обрабатывает корректно)
+          if (filter.height_min !== undefined && height < filter.height_min) return false;
+          if (filter.height_max !== undefined && height > filter.height_max) return false;
+          if (filter.diameter_min !== undefined && diameter < filter.diameter_min) return false;
+          if (filter.diameter_max !== undefined && diameter > filter.diameter_max) return false;
+
+          return true;
+        });
+      }
 
       return {
         currencyRate: response?.GetFindTyreResult?.currencyRate,
-        price_rest_list: response?.GetFindTyreResult?.price_rest_list || [],
-        totalPages: response?.GetFindTyreResult?.totalPages || 0,
+        price_rest_list: {
+          TyrePriceRest: priceRestList
+        },
+        totalPages: response?.GetFindTyreResult?.totalPages,
         warehouseLogistics: response?.GetFindTyreResult?.warehouseLogistics,
         error: response?.GetFindTyreResult?.error,
       };
     } catch (error) {
+      console.error('Ошибка при поиске шин:', error.message);
+
       return {
         error: `Ошибка при поиске шин: ${error.message}`,
         price_rest_list: [],
@@ -221,3 +253,4 @@ export class SoapService {
     }
   }
 }
+  
