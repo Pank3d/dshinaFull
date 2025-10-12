@@ -1,5 +1,41 @@
-// Константа наценки
+// Константа наценки по умолчанию
 export const MARKUP_PERCENTAGE = 9;
+
+/**
+ * Определяет процент наценки в зависимости от диаметра шины
+ * @param diameter - диаметр шины (R13, R14, R15 и т.д.)
+ * @returns процент наценки
+ */
+export const getMarkupPercentage = (diameter?: number): number => {
+  if (!diameter) return MARKUP_PERCENTAGE;
+
+  if (diameter >= 13 && diameter <= 16) {
+    return 5; // 5% для R13-R16
+  }
+
+  if (diameter >= 22) {
+    return 7; // 7% для R22 и выше
+  }
+
+  return MARKUP_PERCENTAGE; // 9% для остальных (R17-R21)
+};
+
+/**
+ * Извлекает диаметр из названия шины
+ * @param name - название шины (например, "195/65R15 91H")
+ * @returns диаметр шины или undefined
+ */
+export const extractDiameter = (name?: string): number | undefined => {
+  if (!name) return undefined;
+
+  // Парсим диаметр из строки типа "195/65R15" или "255/40ZR19"
+  const match = name.match(/\d+\/\d+[A-Z]*R(\d+)/);
+  if (match) {
+    return parseInt(match[1], 10);
+  }
+
+  return undefined;
+};
 
 /**
  * Применяет наценку к цене
@@ -30,11 +66,15 @@ export const getPriceWithMarkup = (item: any): number => {
     return 0;
   }
 
-  const basePrice =
-    item.whpr.wh_price_rest[0].price_rozn ||
-    item.whpr.wh_price_rest[0].price ||
-    0;
-  return applyMarkup(basePrice);
+  const basePrice = item.whpr.wh_price_rest[0].price;
+
+  // Извлекаем диаметр из названия товара
+  const diameter = extractDiameter(item.name);
+
+  // Определяем процент наценки в зависимости от диаметра
+  const markupPercent = getMarkupPercentage(diameter);
+
+  return applyMarkup(basePrice, markupPercent);
 };
 
 /**
@@ -66,6 +106,9 @@ export const getSeasonDisplayName = (season?: string): string => {
     winter: "Зимние",
     "all-season": "Всесезонные",
     all_season: "Всесезонные",
+    s: "Летние",
+    w: "Зимние",
+    a: "Всесезонные",
   };
 
   return seasonMap[season.toLowerCase()] || season;
