@@ -20,6 +20,7 @@ export interface FindTyreFilter {
   thom?: boolean;
   type?: string[];
   speed_index?: string;
+  min_stock?: number;
 }
 
 export interface TyreInfo {
@@ -51,8 +52,6 @@ export interface ResultFindTyre {
 
 export interface FindTyreParams {
   filter: FindTyreFilter;
-  page?: number;
-  pageSize?: number;
 }
 
 // Опции для селектов

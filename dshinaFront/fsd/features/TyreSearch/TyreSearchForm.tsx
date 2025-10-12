@@ -23,14 +23,14 @@ export const TyreSearchForm = () => {
         ) : tyresData && tyresData.length > 0 ? (
           <>
             <ProductList data={tyresData} />
-            <Pagination
+            {/* <Pagination
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
               itemsPerPage={pagination.pageSize}
               totalItems={pagination.totalItems}
               onPageChange={pagination.onPageChange}
               onItemsPerPageChange={pagination.onPageSizeChange}
-            />
+            /> */}
           </>
         ) : (
           <p className={style.anyText}>

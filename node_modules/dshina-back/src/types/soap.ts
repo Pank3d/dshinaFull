@@ -17,6 +17,8 @@ export interface FindTyreFilter {
   podbor_type?: number[];
   thom?: boolean;
   type?: string[];
+  speed_index?: string;
+  min_stock?: number;
 }
 
 export interface TyreInfo {

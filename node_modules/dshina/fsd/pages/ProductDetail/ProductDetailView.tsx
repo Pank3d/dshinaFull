@@ -114,11 +114,15 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
         name: "Шипованная",
         value: product.thorn ? "Да" : "Нет",
       },
-      ...(product.season ? [{
-        "@type": "PropertyValue",
-        name: "Сезонность",
-        value: getSeasonDisplayName(product.season),
-      }] : []),
+      ...(product.season
+        ? [
+            {
+              "@type": "PropertyValue",
+              name: "Сезонность",
+              value: getSeasonDisplayName(product.season),
+            },
+          ]
+        : []),
     ],
   };
 

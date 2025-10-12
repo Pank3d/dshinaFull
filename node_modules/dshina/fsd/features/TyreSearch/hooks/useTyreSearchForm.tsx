@@ -194,7 +194,7 @@ export const useTyreSearchForm = () => {
     data: tyresData,
     isLoading: isLoadingTyres,
     error: errorTyres,
-  } = useFindTyre(filter, page, pageSize, shouldSearch);
+  } = useFindTyre(filter);
 
   // Фильтрация по минимальному количеству на фронтенде
   const filteredTyresData = useMemo(() => {

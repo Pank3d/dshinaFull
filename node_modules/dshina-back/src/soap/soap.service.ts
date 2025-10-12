@@ -187,32 +187,41 @@ export class SoapService {
 
   async findTyre(
     filter: FindTyreFilter,
-    page: number = 0,
-    pageSize: number = 50,
   ): Promise<ResultFindTyre> {
-    if (pageSize > 2000) {
-      throw new Error('Размер страницы не может превышать 2000');
-    }
-
     const client = await this.createSoapClient();
 
     try {
-      const requestParams = {
-        login: this.LOGIN,
-        password: this.PASSWORD,
-        filter: filter,
-        page: page,
-        pageSize: pageSize,
-      };
+      const filteredResults: any[] = [];
+      let apiPage = 0;
+      let currencyRate: any;
+      let warehouseLogistics: any;
+      const apiPageSize = 50; // Размер страницы для запросов к API
 
-      const [response] = await client.GetFindTyreAsync(requestParams);
+      // Фетчим все страницы API до конца
+      while (true) {
+        const requestParams = {
+          login: this.LOGIN,
+          password: this.PASSWORD,
+          filter: filter,
+          page: apiPage,
+          pageSize: apiPageSize,
+        };
 
-      let priceRestList = response?.GetFindTyreResult?.price_rest_list?.TyrePriceRest || [];
+        const [response] = await client.GetFindTyreAsync(requestParams);
 
-      // ФИЛЬТРАЦИЯ НА СТОРОНЕ БЭКЕНДА по высоте и диаметру (т.к. API их игнорирует)
-      // API корректно фильтрует по ширине, поэтому фильтруем только оставшиеся параметры
-      if (Array.isArray(priceRestList) && priceRestList.length > 0) {
-        priceRestList = priceRestList.filter((tyre: any) => {
+        currencyRate = response?.GetFindTyreResult?.currencyRate;
+        warehouseLogistics = response?.GetFindTyreResult?.warehouseLogistics;
+
+        let priceRestList = response?.GetFindTyreResult?.price_rest_list?.TyrePriceRest || [];
+
+        // Если API вернул пустой список, значит страницы закончились
+        if (!Array.isArray(priceRestList) || priceRestList.length === 0) {
+          break;
+        }
+
+        // ФИЛЬТРАЦИЯ НА СТОРОНЕ БЭКЕНДА по высоте, диаметру, индексу скорости и минимальному количеству
+        // API корректно фильтрует по ширине, поэтому фильтруем только оставшиеся параметры
+        const filtered = priceRestList.filter((tyre: any) => {
           const name = tyre.name || '';
           // Парсим размер из строки типа "195/65R15" или "255/40ZR19"
           const sizeMatch = name.match(/(\d+)\/(\d+)[A-Z]*R(\d+)/);
@@ -223,24 +232,59 @@ export class SoapService {
 
           const [, , height, diameter] = sizeMatch.map(Number);
 
-          // Фильтруем только по высоте и диаметру (ширину API обрабатывает корректно)
+          // Фильтруем по высоте и диаметру (ширину API обрабатывает корректно)
           if (filter.height_min !== undefined && height < filter.height_min) return false;
           if (filter.height_max !== undefined && height > filter.height_max) return false;
           if (filter.diameter_min !== undefined && diameter < filter.diameter_min) return false;
           if (filter.diameter_max !== undefined && diameter > filter.diameter_max) return false;
 
+          // Фильтруем по индексу скорости (если указан)
+          if (filter.speed_index) {
+            // Извлекаем индекс скорости из названия (например, "195/65R15 91H" -> "H")
+            const speedMatch = name.match(/\d+[A-Z]*R\d+[C]?\s*\d+[A-Z]*\s*([A-Z]+)/);
+            if (speedMatch) {
+              const speedIndex = speedMatch[1];
+              // Проверяем, содержит ли индекс скорости нужную букву
+              if (!speedIndex.includes(filter.speed_index)) {
+                return false;
+              }
+            } else {
+              // Если не смогли извлечь индекс скорости - отфильтровываем
+              return false;
+            }
+          }
+
+          // Фильтруем по минимальному количеству в наличии
+          if (filter.min_stock !== undefined) {
+            const whPriceRest = tyre.whpr?.wh_price_rest || [];
+            // Суммируем остатки по всем складам
+            const totalStock = whPriceRest.reduce((sum: number, item: any) => sum + (item.rest || 0), 0);
+            if (totalStock < filter.min_stock) {
+              return false;
+            }
+          }
+
           return true;
         });
+
+        filteredResults.push(...filtered);
+        apiPage++;
+
+        // Если API вернул меньше результатов чем запрашивали, значит это последняя страница
+        if (priceRestList.length < apiPageSize) {
+          break;
+        }
       }
 
+      // Возвращаем ВСЕ отфильтрованные результаты без пагинации
       return {
-        currencyRate: response?.GetFindTyreResult?.currencyRate,
+        currencyRate: currencyRate,
         price_rest_list: {
-          TyrePriceRest: priceRestList
+          TyrePriceRest: filteredResults
         },
-        totalPages: response?.GetFindTyreResult?.totalPages,
-        warehouseLogistics: response?.GetFindTyreResult?.warehouseLogistics,
-        error: response?.GetFindTyreResult?.error,
+        totalPages: 1,
+        warehouseLogistics: warehouseLogistics,
+        error: undefined,
       };
     } catch (error) {
       console.error('Ошибка при поиске шин:', error.message);

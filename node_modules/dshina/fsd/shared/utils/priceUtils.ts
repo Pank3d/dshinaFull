@@ -59,14 +59,14 @@ export const getTotalRest = (item: any): number => {
  * @returns русское название сезона
  */
 export const getSeasonDisplayName = (season?: string): string => {
-  if (!season) return '';
-  
+  if (!season) return "";
+
   const seasonMap: Record<string, string> = {
-    'summer': 'Летние',
-    'winter': 'Зимние', 
-    'all-season': 'Всесезонные',
-    'all_season': 'Всесезонные'
+    summer: "Летние",
+    winter: "Зимние",
+    "all-season": "Всесезонные",
+    all_season: "Всесезонные",
   };
-  
+
   return seasonMap[season.toLowerCase()] || season;
 };
