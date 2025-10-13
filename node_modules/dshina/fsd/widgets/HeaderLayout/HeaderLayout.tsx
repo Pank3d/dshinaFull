@@ -8,7 +8,7 @@ export const HeaderLayout = () => {
   return (
     <div className={style.headerLayoutWrapper}>
       <PromoOffer />
-      <NavBar />  
+      <NavBar />
       <Header />
     </div>
   );

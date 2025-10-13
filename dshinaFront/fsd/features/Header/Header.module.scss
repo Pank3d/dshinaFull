@@ -1,3 +1,5 @@
+@use "../../shared/styles/variables" as *;
+
 .headerWrapper {
   display: flex;
   justify-content: space-between;
@@ -9,12 +11,18 @@
     flex-shrink: 0;
     font-size: 24px;
     font-weight: bold;
+    text-decoration: none;
+    color: inherit;
   }
 
   .centerSection {
     flex: 1;
     display: flex;
     justify-content: center;
+  }
+
+  .mobileMenuWrapper {
+    display: none;
   }
 
   .basketImageContainer {
@@ -26,16 +34,17 @@
   }
 }
 
-@media (max-width: 768px) {
+@include mobile {
   .headerWrapper {
-    flex-wrap: wrap;
     padding: 10px;
     gap: 10px;
 
     .centerSection {
-      order: 3;
-      width: 100%;
-      justify-content: flex-start;
+      display: none;
+    }
+
+    .mobileMenuWrapper {
+      display: block;
     }
   }
 }

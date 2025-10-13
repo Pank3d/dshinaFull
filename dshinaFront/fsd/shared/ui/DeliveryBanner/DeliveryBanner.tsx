@@ -8,13 +8,21 @@ interface DeliveryBannerProps {
   className?: string;
 }
 
-export const DeliveryBanner: React.FC<DeliveryBannerProps> = ({ className }) => {
+export const DeliveryBanner: React.FC<DeliveryBannerProps> = ({
+  className,
+}) => {
   return (
-    <Link href="/delivery" className={`${style.bannerContainer} ${className || ""}`}>
+    <Link
+      href="/delivery"
+      className={`${style.bannerContainer} ${className || ""}`}
+    >
       <div className={style.content}>
         <div className={style.section}>
           <span className={style.text}>
-            <span className={style.highlight}>Бесплатная курьерская доставка</span> по Симферополю, Севастополю, Бахчисараю
+            <span className={style.highlight}>
+              Бесплатная курьерская доставка
+            </span>{" "}
+            по Симферополю, Севастополю, Бахчисараю
           </span>
         </div>
 
@@ -22,7 +30,8 @@ export const DeliveryBanner: React.FC<DeliveryBannerProps> = ({ className }) => 
 
         <div className={style.section}>
           <span className={style.text}>
-            <span className={style.highlight}>Бесплатная доставка</span> во все города Крыма ТК
+            <span className={style.highlight}>Бесплатная доставка</span> во все
+            города Крыма ТК
           </span>
         </div>
 

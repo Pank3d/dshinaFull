@@ -1,3 +1,5 @@
+@use "../../styles/variables" as *;
+
 .formComponent {
   max-width: 1200px;
   margin: 0 auto;
@@ -17,12 +19,12 @@
   gap: 20px 16px;
   margin-bottom: 24px;
 
-  @media (max-width: 768px) {
+  @include mobile {
     grid-template-columns: 1fr;
     gap: 12px;
   }
 
-  @media (min-width: 769px) and (max-width: 1024px) {
+  @include tablet {
     gap: 16px 12px;
   }
 }
