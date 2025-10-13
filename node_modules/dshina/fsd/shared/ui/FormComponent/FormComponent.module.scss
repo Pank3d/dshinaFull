@@ -29,6 +29,10 @@
 
 .fieldWrapper {
   width: 100%;
+
+  &.fullWidth {
+    grid-column: 1 / -1;
+  }
 }
 
 .textInput,

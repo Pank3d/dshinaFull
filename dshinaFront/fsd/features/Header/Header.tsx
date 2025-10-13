@@ -1,13 +1,16 @@
 import React from "react";
+import Link from "next/link";
 import style from "./Header.module.scss";
 import { BasketComponent } from "../../entities/basket/ui";
 import { socialLinksConfig } from "../../shared/config/socialLinksConfig";
-import SocialLinksComponent  from "../../shared/ui/SocialLinks/SocialLinks";
+import SocialLinksComponent from "../../shared/ui/SocialLinks/SocialLinks";
 
 export const Header = () => {
   return (
     <header className={style.headerWrapper}>
-      <div className={style.logoImage}>Dmshina</div>
+      <Link href="/" className={style.logoImage}>
+        Dmshina
+      </Link>
       <div className={style.centerSection}>
         <SocialLinksComponent
           links={socialLinksConfig}

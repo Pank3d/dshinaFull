@@ -194,8 +194,14 @@ export const FormComponent: React.FC<FormComponentProps> = ({
                     return null;
                   }
 
+                  const isFullWidth =
+                    field.type === "priceRange" || field.type === "rangeSlider";
+
                   return (
-                    <div key={field.name} className={style.fieldWrapper}>
+                    <div
+                      key={field.name}
+                      className={`${style.fieldWrapper} ${isFullWidth ? style.fullWidth : ""}`}
+                    >
                       {renderField(field)}
                     </div>
                   );

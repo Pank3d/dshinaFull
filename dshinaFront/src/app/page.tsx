@@ -1,14 +1,16 @@
 import { Suspense } from "react";
-import { Header } from "../../fsd/features/Header";
+import { HeaderLayout } from "../../fsd/widgets/HeaderLayout";
 import { TyreSearchForm } from "../../fsd/features";
 
 export default function Home() {
   return (
-    <div className="p-10">
-      <Header />
-      <Suspense fallback={<div>Загрузка...</div>}>
-        <TyreSearchForm />
-      </Suspense>
+    <div>
+      <HeaderLayout />
+      <div className="p-10">
+        <Suspense fallback={<div>Загрузка...</div>}>
+          <TyreSearchForm />
+        </Suspense>
+      </div>
     </div>
   );
 }
