@@ -8,4 +8,8 @@ export const navBarConfig: NavBarItem[] = [
     label: "Доставка",
     href: "/delivery",
   },
+  {
+    label: "Поиск",
+    href: "/",
+  },
 ];

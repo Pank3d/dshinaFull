@@ -15,18 +15,17 @@ export const BasketComponent = () => {
   const [opened, setOpened] = useState(false);
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const store = useBasketStore();
   const itemCount = store.basketArray.length;
   const sendOrderMutation = useSendOrderToTelegram(
     () => {
-      // onSuccess
       store.clearBasket();
       setShowOrderForm(false);
       setOpened(false);
       setShowSuccessModal(true);
     },
-    (error: any) => {
-      // onError
+    (error: Error) => {
       alert("Ошибка при отправке заказа: " + error.message);
     }
   );
@@ -42,10 +41,7 @@ export const BasketComponent = () => {
   const getMinDeliveryTime = () => {
     if (store.basketArray.length === 0) return 0;
 
-    // Находим максимальное время доставки среди всех товаров
     const maxTime = store.basketArray.reduce((max, item) => {
-      // Предполагаем, что время доставки зависит от остатков на складе
-      // Если товар есть в наличии - 1-2 дня, если нет - 3-7 дней
       if (item.whpr?.wh_price_rest && item.whpr.wh_price_rest.length > 0) {
         const rest = item.whpr.wh_price_rest[0].rest;
         const deliveryDays = rest > 0 ? 2 : 7; // 2 дня если в наличии, 7 если под заказ
@@ -98,7 +94,10 @@ export const BasketComponent = () => {
       </div>
       <ModalComponent
         opened={opened}
-        close={() => setOpened(false)}
+        close={() => {
+          setOpened(false);
+          setAgreedToTerms(false);
+        }}
         title="Корзина"
       >
         <div className={style.basketContent}>
@@ -129,10 +128,20 @@ export const BasketComponent = () => {
                     Общая стоимость: {getTotalPrice().toLocaleString()} ₽
                   </strong>
                 </div>
+                <div className={style.agreementCheckbox}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={agreedToTerms}
+                      onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    />
+                    <span>Я согласен с условиями обработки персональныъ данных</span>
+                  </label>
+                </div>
                 <button
                   className={style.checkoutButton}
                   onClick={handleOrderClick}
-                  disabled={sendOrderMutation.isPending}
+                  disabled={sendOrderMutation.isPending || !agreedToTerms}
                 >
                   Оформить заказ
                 </button>

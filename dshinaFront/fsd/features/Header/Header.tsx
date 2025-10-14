@@ -20,7 +20,11 @@ export const Header = () => {
         />
       </div>
       <div className={style.mobileMenuWrapper}>
-        <DropdownMenu width={280} position="bottom-end" activator='Связаться с нами'>
+        <DropdownMenu
+          width={280}
+          position="bottom-end"
+          activator="Связаться с нами"
+        >
           <SocialLinksComponent links={socialLinksConfig} />
         </DropdownMenu>
       </div>
