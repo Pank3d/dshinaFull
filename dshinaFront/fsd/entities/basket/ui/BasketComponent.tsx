@@ -135,7 +135,9 @@ export const BasketComponent = () => {
                       checked={agreedToTerms}
                       onChange={(e) => setAgreedToTerms(e.target.checked)}
                     />
-                    <span>Я согласен с условиями обработки персональныъ данных</span>
+                    <span>
+                      Я согласен с условиями обработки персональныъ данных
+                    </span>
                   </label>
                 </div>
                 <button

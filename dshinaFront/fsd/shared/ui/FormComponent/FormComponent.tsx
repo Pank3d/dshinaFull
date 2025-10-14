@@ -127,7 +127,7 @@ export const FormComponent: React.FC<FormComponentProps> = ({
                   type="number"
                   placeholder={field.placeholder}
                   className={style.numberInput}
-                  min='1'
+                  min="1"
                   onChange={(e) => {
                     form.setFieldValue(field.name, e.target.value);
                     if (field.onChangeFromParent) {
